@@ -1,3 +1,9 @@
+export enum SuggestionEndpoints {
+  Bing = 'https://api.bing.com/osjson.aspx?query=',
+  Google = 'https://suggestqueries.google.com/complete/search?client=chrome&q=',
+  YouTube = 'https://suggestqueries.google.com/complete/search?ds=yt&client=chrome&q=',
+}
+
 export enum LLM_MODELS {
   Gpt4oMini = 'gpt-4o-mini',
 }
