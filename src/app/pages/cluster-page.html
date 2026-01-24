@@ -11,7 +11,9 @@
 @if (detail(); as cluster) {
   <p-card>
     <ng-template pTemplate="title">
-      {{ cluster.label }}
+      @if (cluster.type === 'cluster') {
+        {{ cluster.label }}
+      }
     </ng-template>
     <ng-template pTemplate="content">
       <div class="chip-grid">
