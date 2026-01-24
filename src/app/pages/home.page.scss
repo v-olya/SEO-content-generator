@@ -39,6 +39,28 @@
   gap: 0.5rem;
 }
 
+.cluster-badge {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.badge-action {
+  flex: 0 0 auto;
+}
+
+.badge-label.p-button {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  cursor: default;
+}
+
+.badge-action.p-button {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  margin-left: -1px;
+}
+
 .section-header {
   display: flex;
   align-items: center;
@@ -48,4 +70,9 @@
 
 .query-form__field {
   grid-template-columns: 1fr;
+}
+
+.cluster-tooltip .p-tooltip-text {
+  white-space: pre-line;
+  max-width: 320px;
 }

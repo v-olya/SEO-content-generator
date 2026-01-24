@@ -9,6 +9,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TagModule } from 'primeng/tag';
+import { TooltipModule } from 'primeng/tooltip';
 import { ClusterApiService } from '../services/cluster-api.service';
 import { ClusterResponse } from '../types';
 
@@ -22,7 +23,8 @@ import { ClusterResponse } from '../types';
     InputTextModule,
     MessageModule,
     ProgressSpinnerModule,
-    TagModule
+    TagModule,
+    TooltipModule
   ],
   templateUrl: './home.page.html',
   styleUrl: './home.page.scss',
@@ -87,6 +89,14 @@ export class HomePage {
     void this.router.navigate(['/', slug], {
       state: { jobId }
     });
+  }
+
+  formatClusterItems(items: string[]) {
+    if (items.length === 0) {
+      return 'No items found.';
+    }
+
+    return items.join('\n');
   }
 
   private getJobKey(slug: string) {

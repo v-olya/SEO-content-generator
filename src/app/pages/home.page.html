@@ -45,13 +45,27 @@
   </div>
   <div class="badge-grid">
     @for (cluster of response.clusters; track cluster.id) {
-      <button
-        pButton
-        type="button"
-        severity="secondary"
-        [label]="cluster.label + ' (' + cluster.items.length + ')'"
-        (click)="openCluster(response.jobId, cluster.slug)"
-      ></button>
+      <div class="cluster-badge">
+        <button
+          pButton
+          type="button"
+          severity="secondary"
+          class="badge-label"
+          [label]="cluster.label + ' (' + cluster.items.length + ')'"
+          [pTooltip]="formatClusterItems(cluster.items)"
+          tooltipStyleClass="cluster-tooltip"
+          tooltipPosition="bottom"
+        ></button>
+        <button
+          pButton
+          type="button"
+          severity="secondary"
+          class="badge-action"
+          icon="pi pi-arrow-right"
+          title="Create content for this topic"
+          (click)="openCluster(response.jobId, cluster.slug)"
+        ></button>
+      </div>
     }
   </div>
     
