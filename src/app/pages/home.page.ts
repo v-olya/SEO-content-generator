@@ -22,75 +22,7 @@ import { ClusterResponse } from '../types';
     MessageModule,
     TagModule
   ],
-  template: `
-    <p-card>
-      <ng-template pTemplate="title">Cluster search suggestions</ng-template>
-      <ng-template pTemplate="content">
-        <form class="query-form" [formGroup]="form" (ngSubmit)="submit()">
-          <div class="form-row">
-            <input
-              pInputText
-              type="text"
-              formControlName="query"
-              placeholder="Try: how to sell a house"
-              aria-label="Search query"
-            />
-            <button
-              pButton
-              type="submit"
-              label="Cluster"
-              [disabled]="isBusy() || form.invalid"
-              icon="pi pi-sitemap"
-            ></button>
-          </div>
-        </form>
-      </ng-template>
-    </p-card>
-
-    @if (isBusy()) {
-      <p-message severity="info" text="Clustering suggestions…"></p-message>
-    }
-
-    @if (error(); as message) {
-      <p-message severity="error" [text]="message"></p-message>
-    }
-
-    @if (result(); as response) {
-      <p-divider></p-divider>
-      <div class="section-header">
-        <h2>Clustered themes</h2>
-        <p-tag [value]="response.clusters.length + ' clusters'"></p-tag>
-      </div>
-      <div class="badge-grid">
-        @for (cluster of response.clusters; track cluster.id) {
-          <button
-            pButton
-            type="button"
-            severity="secondary"
-            [label]="cluster.label + ' (' + cluster.items.length + ')'"
-            (click)="openCluster(response.jobId, cluster.slug)"
-          ></button>
-        }
-      </div>
-
-      <div class="section-header">
-        <h3>Unsorted ideas</h3>
-        <p-tag severity="warn" [value]="response.orphans.length + ' items'"></p-tag>
-      </div>
-      <div class="badge-grid">
-        @for (orphan of response.orphans; track orphan.id) {
-          <button
-            pButton
-            type="button"
-            severity="secondary"
-            outlined
-            [label]="orphan.label"
-            (click)="openCluster(response.jobId, orphan.slug)"
-          ></button>
-        }
-      </div>
-    }
-  `,
+  templateUrl: './home.page.html',
   styleUrl: './home.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
