@@ -1,59 +1,74 @@
-# HowTo
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.15.
+# How-to
 
-## Development server
+Single-repo setup with an Angular frontend and a NestJS backend.
 
-To start a local development server, run:
+## Prerequisites
 
-```bash
-ng serve
-```
+- Node.js 20+
+- npm
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Frontend (Angular)
 
-## Code scaffolding
+**Location:** root folder
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### Install
 
 ```bash
-ng generate component component-name
-```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
 
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+### Development server
 
 ```bash
-ng build
+npm start
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Open `http://localhost:4200/`. The dev server uses the proxy from `proxy.conf.json` so `/api` calls are forwarded to `http://localhost:3000`.
 
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+### Build
 
 ```bash
-ng test
+npm run build
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+### Test
 
 ```bash
-ng e2e
+npm test
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Backend (NestJS)
 
-## Additional Resources
+**Location:** `backend/`
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+### Development server
+
+```bash
+cd backend
+npm run start:dev
+```
+
+The API runs on `http://localhost:3000`.
+
+### Build
+
+```bash
+cd backend
+npm run build
+```
+
+### Production start
+
+```bash
+cd backend
+npm start
+```
+
+### Environment variables
+
+- `CORS_ORIGIN` (optional): comma-separated list of allowed origins. Defaults to `http://localhost:4200`.
+
+## Useful links
+
+- Angular CLI: https://angular.dev/tools/cli
+- NestJS: https://docs.nestjs.com/
