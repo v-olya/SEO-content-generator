@@ -1,0 +1,11 @@
+.page {
+  display: grid;
+  gap: 1rem;
+}
+
+.chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}

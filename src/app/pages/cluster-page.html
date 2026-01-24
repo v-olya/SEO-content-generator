@@ -1,0 +1,27 @@
+<button pButton icon="pi pi-arrow-left" label="Back" text routerLink="/"></button>
+
+@if (isBusy()) {
+  <p-message severity="info" text="Loading cluster details…"></p-message>
+}
+
+@if (error(); as message) {
+  <p-message severity="error" [text]="message"></p-message>
+}
+
+@if (detail(); as cluster) {
+  <p-card>
+    <ng-template pTemplate="title">
+      {{ cluster.label }}
+    </ng-template>
+    <ng-template pTemplate="content">
+      <div class="chip-grid">
+        @for (item of cluster.items; track item) {
+          <p-chip [label]="item"></p-chip>
+        }
+      </div>
+    </ng-template>
+    <ng-template pTemplate="footer">
+      <button pButton label="Coming soon..." disabled></button>
+    </ng-template>
+  </p-card>
+}
