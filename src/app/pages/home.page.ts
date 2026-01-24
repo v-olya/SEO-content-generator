@@ -114,6 +114,13 @@ export class HomePage {
   protected readonly error = computed(() => this.errorMessage());
   protected readonly result = computed(() => this.response());
 
+  constructor() {
+    const stored = this.readStoredResponse();
+    if (stored) {
+      this.response.set(stored);
+    }
+  }
+
   submit() {
     if (this.form.invalid || this.loading()) {
       return;
@@ -131,6 +138,7 @@ export class HomePage {
     this.api.clusterQuery(query).subscribe({
       next: (result) => {
         this.response.set(result);
+        this.storeResponse(result);
         this.loading.set(false);
       },
       error: (error: unknown) => {
@@ -141,7 +149,31 @@ export class HomePage {
   }
 
   openCluster(jobId: string, slug: string) {
-    void this.router.navigate(['/cluster', jobId, slug]);
+    sessionStorage.setItem(this.getJobKey(slug), jobId);
+    void this.router.navigate(['/', slug], {
+      state: { jobId }
+    });
+  }
+
+  private getJobKey(slug: string) {
+    return `cluster-job:${slug}`;
+  }
+
+  private storeResponse(response: ClusterResponse) {
+    sessionStorage.setItem('cluster-response', JSON.stringify(response));
+  }
+
+  private readStoredResponse() {
+    const raw = sessionStorage.getItem('cluster-response');
+    if (!raw) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(raw) as ClusterResponse;
+    } catch {
+      return null;
+    }
   }
 
   private toErrorMessage(error: unknown) {
