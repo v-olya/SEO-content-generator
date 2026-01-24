@@ -27,10 +27,9 @@
   <p-message severity="info">
     <p-progressSpinner
       strokeWidth="4"
-      aria-label="Clustering suggestions"
       [style]="{ width: '1.5rem', height: '1.5rem', marginRight: '0.5rem' }"
     ></p-progressSpinner>
-    <span>Clustering suggestions…</span>
+    <span>Processing search suggestions…</span>
   </p-message>
 }
 
@@ -68,7 +67,7 @@
       </div>
     }
   </div>
-    
+
   @if (response.orphans.length > 0) {
     <div class="section-header">
       <h2>Unsorted ideas</h2>

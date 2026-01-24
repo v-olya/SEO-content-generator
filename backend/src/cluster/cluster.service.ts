@@ -1,12 +1,12 @@
 import { BadRequestException, Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { randomUUID } from 'crypto';
-import { LLM_MAX_RETRIES, LLM_MODEL } from './constants';
+import { LLM_MAX_RETRIES, LLM_MODEL, ERROR_MESSAGE } from './constants';
 import {
   ClusterDetailResponse,
   ClusterGroup,
   ClusterJob,
   ClusterResponse,
-  OrphanGroup
+  OrphanGroup,
 } from './cluster.types';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class ClusterService {
   async createJob(query: string): Promise<ClusterResponse> {
     const trimmed = query?.trim();
     if (!trimmed) {
-      throw new BadRequestException('Query is required');
+      throw new BadRequestException(ERROR_MESSAGE.QueryRequired);
     }
 
     const suggestions = await this.fetchSuggestions(trimmed);
@@ -24,7 +24,7 @@ export class ClusterService {
 
     const llmResult = await this.clusterWithLLM(uniqueQueries);
     if (!llmResult) {
-      throw new ServiceUnavailableException('LLM clustering is not available.');
+      throw new ServiceUnavailableException(ERROR_MESSAGE.LlmUnavailable);
     }
 
     const { clusters, orphans } = llmResult;
@@ -34,7 +34,7 @@ export class ClusterService {
       jobId,
       clusters,
       orphans,
-      createdAt: Date.now()
+      createdAt: Date.now(),
     };
 
     this.jobs.set(jobId, job);
@@ -42,7 +42,7 @@ export class ClusterService {
     return {
       jobId,
       clusters,
-      orphans
+      orphans,
     };
   }
 
@@ -59,7 +59,7 @@ export class ClusterService {
         slug,
         label: cluster.label,
         items: cluster.items,
-        type: 'cluster'
+        type: 'cluster',
       };
     }
 
@@ -70,7 +70,7 @@ export class ClusterService {
         slug,
         label: orphan.label,
         items: [orphan.item],
-        type: 'orphan'
+        type: 'orphan',
       };
     }
 
@@ -82,7 +82,7 @@ export class ClusterService {
     const endpoints = [
       `https://api.bing.com/osjson.aspx?query=${encoded}`,
       `https://suggestqueries.google.com/complete/search?client=chrome&q=${encoded}`,
-      `https://suggestqueries.google.com/complete/search?ds=yt&client=chrome&q=${encoded}`
+      `https://suggestqueries.google.com/complete/search?ds=yt&client=chrome&q=${encoded}`,
     ];
 
     const responses = await Promise.allSettled(
@@ -96,7 +96,7 @@ export class ClusterService {
           return data[1].filter((item): item is string => typeof item === 'string');
         }
         return [] as string[];
-      })
+      }),
     );
 
     return responses
@@ -115,8 +115,8 @@ export class ClusterService {
     const prompt = {
       role: 'user',
       content: `Cluster the following search suggestions into thematic groups. Return strict JSON with the shape: {"clusters":[{"label":"...","items":["..."]}],"orphans":["..."]}. Do not include any markdown. Suggestions: ${JSON.stringify(
-        queries
-      )}`
+        queries,
+      )}`,
     };
 
     const maxAttempts = LLM_MAX_RETRIES;
@@ -126,13 +126,13 @@ export class ClusterService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`
+          Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
           model,
           messages: [prompt],
-          temperature: 0.2
-        })
+          temperature: 0.2,
+        }),
       });
 
       if (response.ok) {
@@ -166,7 +166,7 @@ export class ClusterService {
   private buildGroups(
     clusters: Array<{ label: string; items: string[] }>,
     orphans: string[],
-    original: string[]
+    original: string[],
   ) {
     const allowed = new Set(original);
     const cleanedClusters: ClusterGroup[] = clusters
@@ -176,7 +176,7 @@ export class ClusterService {
           id: randomUUID(),
           label: cluster.label.trim() || 'Cluster',
           slug: this.slugify(cluster.label || 'cluster'),
-          items
+          items,
         };
       })
       .filter((cluster) => cluster.items.length > 1);
@@ -187,7 +187,7 @@ export class ClusterService {
         id: randomUUID(),
         label: item,
         slug: this.slugify(item),
-        item
+        item,
       }));
 
     const used = new Set(cleanedClusters.flatMap((cluster) => cluster.items));
@@ -201,7 +201,7 @@ export class ClusterService {
           id: randomUUID(),
           label: item,
           slug: this.slugify(item),
-          item
+          item,
         });
       }
     }
