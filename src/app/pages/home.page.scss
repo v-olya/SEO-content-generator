@@ -20,35 +20,32 @@
   text-transform: uppercase;
   letter-spacing: 0.18em;
   font-size: 0.75rem;
-  .page {
-    display: grid;
-    gap: 1rem;
-  }
+}
 
-  .form-row {
-    display: flex;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-  }
+.form-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
 
-  .form-row input {
-    flex: 1;
-    min-width: 240px;
-  }
+.form-row input {
+  flex: 1;
+  min-width: 240px;
+}
 
-  .badge-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
+.badge-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
 
-  .section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-  }
-  .query-form__field {
-    grid-template-columns: 1fr;
-  }
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.query-form__field {
+  grid-template-columns: 1fr;
 }
