@@ -15,6 +15,7 @@
           type="submit"
           label="Cluster"
           [disabled]="isBusy() || form.invalid"
+          [loading]="isBusy()"
           icon="pi pi-sitemap"
         ></button>
       </div>
@@ -23,18 +24,24 @@
 </p-card>
 
 @if (isBusy()) {
-  <p-message severity="info" text="Clustering suggestions…"></p-message>
+  <p-message severity="info">
+    <p-progressSpinner
+      strokeWidth="4"
+      aria-label="Clustering suggestions"
+      [style]="{ width: '1.5rem', height: '1.5rem', marginRight: '0.5rem' }"
+    ></p-progressSpinner>
+    <span>Clustering suggestions…</span>
+  </p-message>
 }
 
 @if (error(); as message) {
-  <p-message severity="error" [text]="message"></p-message>
+  <p-message severity="error">{{ message }}</p-message>
 }
 
 @if (result(); as response) {
   <p-divider></p-divider>
   <div class="section-header">
     <h2>Clustered themes</h2>
-    <p-tag [value]="response.clusters.length + ' clusters'"></p-tag>
   </div>
   <div class="badge-grid">
     @for (cluster of response.clusters; track cluster.id) {
@@ -47,21 +54,22 @@
       ></button>
     }
   </div>
-
-  <div class="section-header">
-    <h2>Unsorted ideas</h2>
-    <p-tag severity="warn" [value]="response.orphans.length + ' items'"></p-tag>
-  </div>
-  <div class="badge-grid">
-    @for (orphan of response.orphans; track orphan.id) {
-      <button
-        pButton
-        type="button"
-        severity="secondary"
-        outlined
-        [label]="orphan.label"
-        (click)="openCluster(response.jobId, orphan.slug)"
-      ></button>
-    }
-  </div>
+    
+  @if (response.orphans.length > 0) {
+    <div class="section-header">
+      <h2>Unsorted ideas</h2>
+    </div>
+    <div class="badge-grid">
+      @for (orphan of response.orphans; track orphan.id) {
+        <button
+          pButton
+          type="button"
+          severity="secondary"
+          outlined
+          [label]="orphan.label"
+          (click)="openCluster(response.jobId, orphan.slug)"
+        ></button>
+      }
+    </div>
+  }
 }

@@ -7,6 +7,7 @@ import { CardModule } from 'primeng/card';
 import { DividerModule } from 'primeng/divider';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TagModule } from 'primeng/tag';
 import { ClusterApiService } from '../services/cluster-api.service';
 import { ClusterResponse } from '../types';
@@ -20,6 +21,7 @@ import { ClusterResponse } from '../types';
     DividerModule,
     InputTextModule,
     MessageModule,
+    ProgressSpinnerModule,
     TagModule
   ],
   templateUrl: './home.page.html',
