@@ -1,13 +1,14 @@
 import { BadRequestException, Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { LLM_MAX_RETRIES, LLM_MODEL, ERROR_MESSAGE } from './constants';
+import { SuggestionEndpoints } from './constants';
 import {
   ClusterDetailResponse,
   ClusterGroup,
   ClusterJob,
   ClusterResponse,
   OrphanGroup,
-} from './cluster.types';
+} from '../../../shared/cluster.types';
 
 @Injectable()
 export class ClusterService {
@@ -52,7 +53,7 @@ export class ClusterService {
       return null;
     }
 
-    const cluster = job.clusters.find((item) => item.slug === slug);
+    const cluster = job.clusters.find((item: ClusterGroup) => item.slug === slug);
     if (cluster) {
       return {
         jobId,
@@ -63,7 +64,7 @@ export class ClusterService {
       };
     }
 
-    const orphan = job.orphans.find((item) => item.slug === slug);
+    const orphan = job.orphans.find((item: OrphanGroup) => item.slug === slug);
     if (orphan) {
       return {
         jobId,
@@ -80,9 +81,9 @@ export class ClusterService {
   private async fetchSuggestions(query: string): Promise<string[]> {
     const encoded = encodeURIComponent(query);
     const endpoints = [
-      `https://api.bing.com/osjson.aspx?query=${encoded}`,
-      `https://suggestqueries.google.com/complete/search?client=chrome&q=${encoded}`,
-      `https://suggestqueries.google.com/complete/search?ds=yt&client=chrome&q=${encoded}`,
+      `${SuggestionEndpoints.Bing}${encoded}`,
+      `${SuggestionEndpoints.Google}${encoded}`,
+      `${SuggestionEndpoints.YouTube}${encoded}`,
     ];
 
     const responses = await Promise.allSettled(

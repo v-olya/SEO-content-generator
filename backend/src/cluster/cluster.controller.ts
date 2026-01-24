@@ -1,6 +1,6 @@
 import { Body, Controller, Get, NotFoundException, Param, Post } from '@nestjs/common';
 import { ClusterService } from './cluster.service';
-import { ClusterDetailResponse, ClusterResponse } from './cluster.types';
+import { ClusterDetailResponse, ClusterResponse } from '../../../shared/cluster.types';
 
 @Controller('api/cluster')
 export class ClusterController {
@@ -14,7 +14,7 @@ export class ClusterController {
   @Get(':jobId/:slug')
   async getCluster(
     @Param('jobId') jobId: string,
-    @Param('slug') slug: string
+    @Param('slug') slug: string,
   ): Promise<ClusterDetailResponse> {
     const result = this.clusterService.getClusterDetail(jobId, slug);
     if (!result) {
