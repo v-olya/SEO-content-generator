@@ -1,4 +1,4 @@
-You are an expert in TypeScript, Angular, and scalable web application development. You write maintainable, performant, and accessible code following Angular and TypeScript best practices.
+Write maintainable, performant, scalable and accessible code following the best practices.
 
 ## TypeScript Best Practices
 
@@ -16,7 +16,7 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Use `NgOptimizedImage` for all static images.
   - `NgOptimizedImage` does not work for inline base64 images.
 
-## Components
+### Components
 
 - Keep components small and focused on a single responsibility
 - Use `input()` and `output()` functions instead of decorators
@@ -27,21 +27,25 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Do NOT use `ngClass`, use `class` bindings instead
 - Do NOT use `ngStyle`, use `style` bindings instead
 
-## State Management
+### State Management
 
 - Use signals for local component state
 - Use `computed()` for derived state
 - Keep state transformations pure and predictable
 - Do NOT use `mutate` on signals, use `update` or `set` instead
 
-## Templates
+### Templates
 
 - Keep templates simple and avoid complex logic
 - Use native control flow (`@if`, `@for`, `@switch`) instead of `*ngIf`, `*ngFor`, `*ngSwitch`
 - Use the async pipe to handle observables
 
-## Services
+### Services
 
 - Design services around a single responsibility
 - Use the `providedIn: 'root'` option for singleton services
 - Use the `inject()` function instead of constructor injection
+
+## Other Libraries besides Angular
+
+For any other library, use **Context7 MCP** when you need documentation for code generation, setup or configuration steps.
