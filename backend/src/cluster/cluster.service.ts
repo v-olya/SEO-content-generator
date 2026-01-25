@@ -7,7 +7,13 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
 import { createResponseSchema } from './schema';
-import { LLM_MAX_RETRIES, LLM_MODELS, ERROR_MESSAGE, SuggestionEndpoints } from '../constants';
+import {
+  LLM_MAX_RETRIES,
+  LLM_MODELS,
+  ERROR_MESSAGE,
+  SuggestionEndpoints,
+  CLUSTERING_PROMPT_TEMPLATE,
+} from '../constants';
 import {
   ClusterDetailResponse,
   ClusterGroup,
@@ -122,7 +128,7 @@ export class ClusterService {
   private async clusterWithLLM(queries: string[]) {
     const apiKey = this.configService.get<string>('OPENAI_API_KEY');
     if (!apiKey) {
-      this.logger.error('OPENAI_API_KEY is not configured');
+      this.logger.error('OPENAI_API_KEY not configured');
       return null;
     }
     this.logger.log(`OPENAI_API_KEY is configured (length: ${apiKey.length})`);
@@ -131,16 +137,7 @@ export class ClusterService {
     this.logger.log(`Using model: ${model}`);
     const prompt = {
       role: 'user',
-      content: `You will receive an array of phrases. Cluster them into thematic groups and return STRICT JSON only, with the shape: {"clusters":[{"label":"...","items":["..."]}],"orphans":["..."]}. Do NOT include any markdown, commentary, or extra fields.
-
-Important rules (apply these exactly):
-- Treat short country codes and common location names as LOCATION MODIFIERS.
-- Do NOT place a location-specific items into a general cluster (e.g., "Selling a house - General") unless other items in the cluster share the same location modifier or the location does not change the intent or required guidance. For example, "how to sell a house uk" should be considered location-specific and should not be merged into a pure general "how to sell a house" cluster unless you are sure the guidance is identical.
-- Normalize punctuation and whitespace when comparing suggestions, but preserve meaningful words. Ignore casing.
-- Only include an item in a cluster if it clearly matches the cluster theme. Otherwise, put it into "orphans".
-- If a suggestion contains multiple clear intents, you may include it in multiple clusters.
-- Identify specific brands, products, or named entities (e.g., "Coffee 2.0", "iPhone 15") and treat them as distinct from general categories. Do not cluster specific product names or brand names with general thematic clusters unless the cluster is specifically about that brand/product.
-Here are the phrases: ${JSON.stringify(queries)}`,
+      content: CLUSTERING_PROMPT_TEMPLATE.replace('{queries}', JSON.stringify(queries)),
     };
 
     const maxAttempts = LLM_MAX_RETRIES;
