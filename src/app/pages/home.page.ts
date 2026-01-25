@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DividerModule } from 'primeng/divider';
@@ -44,6 +45,7 @@ import {
 export class HomePage {
   private readonly api = inject(ClusterApiService);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly form = new FormGroup({
     query: new FormControl('', [Validators.required, Validators.minLength(3)]),
@@ -84,17 +86,19 @@ export class HomePage {
     this.errorMessage.set(null);
     this.response.set(null);
 
-    this.api.clusterQuery(query).subscribe({
-      next: (result) => {
-        this.response.set(result);
-        this.storeResponse(result);
-        this.loading.set(false);
-      },
-      error: (error: unknown) => {
-        this.errorMessage.set(this.toErrorMessage(error));
-        this.loading.set(false);
-      },
-    });
+    this.api.clusterQuery(query)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.response.set(result);
+          this.storeResponse(result);
+          this.loading.set(false);
+        },
+        error: (error: unknown) => {
+          this.errorMessage.set(this.toErrorMessage(error));
+          this.loading.set(false);
+        },
+      });
   }
 
   openCluster(jobId: string, slug: string) {

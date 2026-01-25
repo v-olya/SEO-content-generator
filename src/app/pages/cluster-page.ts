@@ -1,6 +1,14 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { ChipModule } from 'primeng/chip';
@@ -24,6 +32,7 @@ export class ClusterPage implements OnInit {
   private readonly api = inject(ClusterApiService);
   private readonly route = inject(ActivatedRoute);
   private readonly document = inject(DOCUMENT);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
@@ -43,16 +52,19 @@ export class ClusterPage implements OnInit {
       return;
     }
 
-    this.api.getClusterDetail(jobId, slug).subscribe({
-      next: (result) => {
-        this.response.set(result);
-        this.loading.set(false);
-      },
-      error: () => {
-        this.errorMessage.set(ErrorMessage.ClusterLoadFailed);
-        this.loading.set(false);
-      },
-    });
+    this.api
+      .getClusterDetail(jobId, slug)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.response.set(result);
+          this.loading.set(false);
+        },
+        error: () => {
+          this.errorMessage.set(ErrorMessage.ClusterLoadFailed);
+          this.loading.set(false);
+        },
+      });
   }
 
   private getJobId(slug: string | null) {
