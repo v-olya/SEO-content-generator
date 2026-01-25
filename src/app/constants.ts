@@ -10,7 +10,7 @@ export enum ErrorMessage {
 
 export enum ValidationMessage {
   QueryRequired = 'Search query is required',
-  QueryMinLength = 'Search query must be at least 2 characters',
+  QueryMinLength = 'Type at least 3 characters',
 }
 
 export enum UILabel {
@@ -54,6 +54,7 @@ export enum StatusMessage {
 
 export enum StorageKey {
   ClusterResponse = 'cluster-response',
+  ClusterQuery = 'cluster-query',
   ClusterJobPrefix = 'cluster-job',
 }
 
