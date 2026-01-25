@@ -62,6 +62,7 @@
       @let color = getClusterColor(idx);
       <div
         class="cluster-badge"
+        #badge
         role="listitem"
         [style.--badge-bg]="color.bg"
         [style.--badge-border]="color.border"
@@ -74,6 +75,8 @@
           [label]="cluster.label + ' (' + cluster.items.length + ')'"
           [pTooltip]="formatClusterItems(cluster.items)"
           tooltipPosition="bottom"
+          [autoHide]="false"
+          [appendTo]="badge"
           [tooltipOptions]="{ tooltipStyleClass: 'cluster-tooltip tooltip-bg-' + color.name }"
         ></button>
         <button

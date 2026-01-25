@@ -62,10 +62,11 @@ $orphan-bg-hover-color: #f5f5f5;
 .cluster-badge {
   display: inline-flex;
   align-items: stretch;
-  overflow: hidden;
+  overflow: visible;
   border-radius: 6px;
   background: var(--badge-bg, var(--p-surface-50));
   border: 1px solid var(--badge-border, var(--p-surface-200));
+  position: relative;
 
   .badge-label.p-button {
     border-top-right-radius: 0;
@@ -147,27 +148,40 @@ $orphan-bg-hover-color: #f5f5f5;
 }
 
 ::ng-deep {
-  .cluster-tooltip {
+  .cluster-badge > .cluster-tooltip {
+    position: absolute;
+    left: 0;
+    transform: translateX(0);
+    min-width: 100%;
+    box-sizing: border-box;
+
     .p-tooltip-text {
+      display: block;
+      width: 100%;
+      max-width: none;
       white-space: pre-line;
-      max-width: 320px;
+      max-height: 250px;
       color: white;
+      box-sizing: border-box;
+      overflow-y: auto;
     }
 
-    &.p-tooltip-bottom .p-tooltip-arrow {
-      border-bottom-color: var(--tooltip-bg);
+    &.p-tooltip-bottom,
+    &.p-tooltip-top,
+    &.p-tooltip-left,
+    &.p-tooltip-right {
+      left: 0 !important;
     }
 
+    &.p-tooltip-bottom .p-tooltip-arrow,
     &.p-tooltip-top .p-tooltip-arrow {
-      border-top-color: var(--tooltip-bg);
+      border-color: transparent;
+      left: 50%;
     }
 
-    &.p-tooltip-left .p-tooltip-arrow {
-      border-left-color: var(--tooltip-bg);
-    }
-
+    &.p-tooltip-left .p-tooltip-arrow,
     &.p-tooltip-right .p-tooltip-arrow {
-      border-right-color: var(--tooltip-bg);
+      top: 50%;
     }
   }
 
