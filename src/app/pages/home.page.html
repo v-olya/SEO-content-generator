@@ -1,50 +1,65 @@
 <p-card>
-  <ng-template pTemplate="title">Cluster search suggestions</ng-template>
+  <ng-template pTemplate="title">{{ UILabel.ClusterSearchSuggestions }}</ng-template>
   <ng-template pTemplate="content">
     <form class="query-form" [formGroup]="form" (ngSubmit)="submit()">
       <div class="form-row">
         <input
+          id="query-input"
           pInputText
           type="text"
           formControlName="query"
-          placeholder="Try: how to sell a house"
-          aria-label="Search query"
+          [placeholder]="UIPlaceholder.SearchQuery"
+          [attr.aria-label]="AriaLabel.SearchQueryInput"
+          [attr.aria-invalid]="queryControl.invalid && queryControl.touched"
         />
+        @if (queryControl.invalid && queryControl.touched) {
+          <span id="query-error" class="error-message" role="alert">
+            @if (queryControl.hasError('required')) {
+              {{ ValidationMessage.QueryRequired }}
+            } @else if (queryControl.hasError('minlength')) {
+              {{ ValidationMessage.QueryMinLength }}
+            }
+          </span>
+        }
         <button
           pButton
           type="submit"
-          label="Cluster"
+          [label]="UILabel.Clusterize"
           [disabled]="isBusy() || form.invalid"
           [loading]="isBusy()"
           icon="pi pi-sitemap"
+          [attr.aria-label]="AriaLabel.SubmitQuery"
         ></button>
       </div>
     </form>
   </ng-template>
 </p-card>
 
-@if (isBusy()) {
-  <p-message severity="info">
-    <p-progressSpinner
-      strokeWidth="4"
-      [style]="{ width: '1.5rem', height: '1.5rem', marginRight: '0.5rem' }"
-    ></p-progressSpinner>
-    <span>Processing search suggestions…</span>
-  </p-message>
-}
+<div aria-live="polite" aria-atomic="true">
+  @if (isBusy()) {
+    <p-message severity="info" role="status">
+      <p-progressSpinner
+        strokeWidth="4"
+        [style]="{ width: '1.5rem', height: '1.5rem', marginRight: '0.5rem' }"
+        [attr.aria-label]="AriaLabel.Loading"
+      ></p-progressSpinner>
+      <span>{{ StatusMessage.ProcessingSearchSuggestions }}</span>
+    </p-message>
+  }
 
-@if (error(); as message) {
-  <p-message severity="error">{{ message }}</p-message>
-}
+  @if (error(); as message) {
+    <p-message severity="error" role="alert">{{ message }}</p-message>
+  }
+</div>
 
 @if (result(); as response) {
   <p-divider></p-divider>
   <div class="section-header">
-    <h2>Clustered themes</h2>
+    <h2 id="clustered-themes-heading">{{ UILabel.ClusteredThemes }}</h2>
   </div>
-  <div class="badge-grid">
+  <div class="badge-grid" role="list" aria-labelledby="clustered-themes-heading">
     @for (cluster of response.clusters; track cluster.id) {
-      <div class="cluster-badge">
+      <div class="cluster-badge" role="listitem">
         <button
           pButton
           type="button"
@@ -61,7 +76,7 @@
           severity="secondary"
           class="badge-action"
           icon="pi pi-arrow-right"
-          title="Create content for this topic"
+          [attr.aria-label]="UILabel.GenerateContent"
           (click)="openCluster(response.jobId, cluster.slug)"
         ></button>
       </div>
@@ -70,9 +85,9 @@
 
   @if (response.orphans.length > 0) {
     <div class="section-header">
-      <h2>Unsorted ideas</h2>
+      <h2 id="unsorted-ideas-heading">{{ UILabel.UnsortedIdeas }}</h2>
     </div>
-    <div class="badge-grid">
+    <div class="badge-grid" role="list" aria-labelledby="unsorted-ideas-heading">
       @for (orphan of response.orphans; track orphan.id) {
         <button
           pButton
@@ -81,6 +96,7 @@
           outlined
           [label]="orphan.label"
           (click)="openCluster(response.jobId, orphan.slug)"
+          role="listitem"
         ></button>
       }
     </div>

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -12,6 +12,14 @@ import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { ClusterApiService } from '../services/cluster-api.service';
 import { ClusterResponse } from '../types';
+import {
+  ErrorMessage,
+  UILabel,
+  UIPlaceholder,
+  AriaLabel,
+  StatusMessage,
+  ValidationMessage,
+} from '../constants';
 
 @Component({
   selector: 'app-home-page',
@@ -24,22 +32,21 @@ import { ClusterResponse } from '../types';
     MessageModule,
     ProgressSpinnerModule,
     TagModule,
-    TooltipModule
+    TooltipModule,
   ],
   templateUrl: './home.page.html',
   styleUrl: './home.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'page'
-  }
+    class: 'page',
+  },
 })
 export class HomePage {
   private readonly api = inject(ClusterApiService);
   private readonly router = inject(Router);
-  private readonly formBuilder = inject(FormBuilder);
 
-  protected readonly form = this.formBuilder.group({
-    query: ['', [Validators.required, Validators.minLength(2)]]
+  protected readonly form = new FormGroup({
+    query: new FormControl('', [Validators.required, Validators.minLength(3)]),
   });
 
   private readonly loading = signal(false);
@@ -49,6 +56,16 @@ export class HomePage {
   protected readonly isBusy = computed(() => this.loading());
   protected readonly error = computed(() => this.errorMessage());
   protected readonly result = computed(() => this.response());
+
+  protected get queryControl() {
+    return this.form.controls.query;
+  }
+
+  protected readonly UILabel = UILabel;
+  protected readonly UIPlaceholder = UIPlaceholder;
+  protected readonly AriaLabel = AriaLabel;
+  protected readonly StatusMessage = StatusMessage;
+  protected readonly ValidationMessage = ValidationMessage;
 
   constructor() {
     const stored = this.readStoredResponse();
@@ -80,20 +97,20 @@ export class HomePage {
       error: (error: unknown) => {
         this.errorMessage.set(this.toErrorMessage(error));
         this.loading.set(false);
-      }
+      },
     });
   }
 
   openCluster(jobId: string, slug: string) {
     sessionStorage.setItem(this.getJobKey(slug), jobId);
     void this.router.navigate(['/', slug], {
-      state: { jobId }
+      state: { jobId },
     });
   }
 
   formatClusterItems(items: string[]) {
     if (items.length === 0) {
-      return 'No items found.';
+      return ErrorMessage.NoItemsFound;
     }
 
     return items.join('\n');
@@ -128,6 +145,6 @@ export class HomePage {
       }
     }
 
-    return 'We could not reach the clustering service.';
+    return ErrorMessage.ClusterServiceUnavailable;
   }
 }

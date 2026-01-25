@@ -76,3 +76,11 @@
   white-space: pre-line;
   max-width: 320px;
 }
+
+.error-message {
+  display: block;
+  color: var(--red-500);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+}
