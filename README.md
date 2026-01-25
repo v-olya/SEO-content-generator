@@ -1,68 +1,58 @@
-# How-to
+# Article generator
 
-Single-repo setup with an Angular frontend and a NestJS backend.
+Small monorepo app that creates well-structured content from a general search query.
 
-## Prerequisites
+- Frontend: Angular 20 SPA that talks to the backend via a local proxy.
+- Backend: NestJS handles processing and content generation.
 
-- Node.js 20+
-- npm
+## What this project does
 
-## Frontend (Angular)
+- Collects search suggestions and related queries for a seed phrase.
+- Clusters and groups key phrases into topic groups.
+- Generates a structured SEO article from a chosen query/cluster.
+- Produces an accompanying image and Rich Results markup as schema.org microdata (the agent enforces microdata and validates it using the `validate_microdata` tool via Rich Results Web Testing Tool).
 
-**Location:** root folder
+## Quick start
 
-### Development server
+Prerequisites: Node.js 20+ and npm.
+
+- Install dependencies (root and backend):
+
+```bash
+npm install
+cd backend && npm install
+```
+
+- Run frontend dev server (root):
 
 ```bash
 ng serve
 ```
 
-Open `http://localhost:4200/`. The dev server uses the proxy from `proxy.conf.json` so `/api` calls are forwarded to `http://localhost:3000`.
-
-### Build
-
-```bash
-npm run build
-```
-
-### Test
-
-```bash
-npm test
-```
-
-## Backend (NestJS)
-
-**Location:** `backend/`
-
-### Development server
+- Run backend dev server:
 
 ```bash
 cd backend
 npm run start:dev
 ```
 
-The API runs on `http://localhost:3000`.
+The frontend dev server uses `proxy.conf.json` so `/api` requests are forwarded to the backend (default: http://localhost:3000).
 
-### Build
+## Tech stack
 
-```bash
-cd backend
-npm run build
-```
+- **Languages:** TypeScript
+- **Frontend:** Angular
+- **Backend:** NestJS (Node.js)
+- **Package manager:** npm
+- **LLM models (backend):** gpt-4o-mini, gpt-4o (OpenAI)
 
-### Production start
+## Useful locations
 
-```bash
-cd backend
-npm start
-```
+- Frontend entry: [src/main.ts](src/main.ts)
+- Backend entry: [backend/src/main.ts](backend/src/main.ts)
+- Example controller: [backend/src/article/image.controller.ts](backend/src/article/image.controller.ts)
 
-### Environment variables
+## Environment
 
-- `CORS_ORIGIN` (optional): comma-separated list of allowed origins. Defaults to `http://localhost:4200`.
-
-## Useful links
-
-- Angular CLI: https://angular.dev/tools/cli
-- NestJS: https://docs.nestjs.com/
+- `OPENAI_API_KEY`: required for LLM-based clustering and article generation.
+- `CORS_ORIGIN` (optional): comma-separated list of allowed origins for CORS. Defaults to `http://localhost:4200`.
