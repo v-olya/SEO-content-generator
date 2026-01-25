@@ -12,7 +12,7 @@ export class ArticleController {
 
   @Post('generate')
   async startGeneration(@Body() body: StartArticleRequest): Promise<StartArticleResponse> {
-    return this.articleService.startGeneration(body.jobId, body.slug);
+    return this.articleService.startGeneration(body.label, body.items);
   }
 
   @Get('status/:articleId')

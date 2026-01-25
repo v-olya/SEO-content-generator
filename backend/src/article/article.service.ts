@@ -1,10 +1,11 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
 import {
   ARTICLE_JOB_TIMEOUT_MS,
   ARTICLE_SYSTEM_PROMPT,
   ARTICLE_USER_PROMPT_TEMPLATE,
+  ARTICLE_VALIDATION_REMINDER_PROMPT,
   ERROR_MESSAGE,
   LLM_MODELS,
   VALIDATE_MICRODATA_TOOL,
@@ -13,11 +14,9 @@ import {
 import {
   ArticleGenerationJob,
   ArticleStatusResponse,
-  ClusterDetailResponse,
   MicrodataValidationResult,
   StartArticleResponse,
 } from '../../../shared/cluster.types';
-import { ClusterService } from '../cluster/cluster.service';
 
 interface ChatMessage {
   role: 'system' | 'user' | 'assistant' | 'tool';
@@ -50,29 +49,16 @@ export class ArticleService {
   private readonly logger = new Logger(ArticleService.name);
   private readonly jobs = new Map<string, ArticleGenerationJob>();
 
-  constructor(
-    private readonly configService: ConfigService,
-    private readonly clusterService: ClusterService,
-  ) {}
+  constructor(private readonly configService: ConfigService) {}
 
-  async startGeneration(jobId: string, slug: string): Promise<StartArticleResponse> {
-    this.logger.log(`Starting article generation for jobId: ${jobId}, slug: ${slug}`);
-
-    const clusterDetail = this.clusterService.getClusterDetail(jobId, slug);
-    if (!clusterDetail) {
-      this.logger.error(`Cluster not found: jobId=${jobId}, slug=${slug}`);
-      throw new NotFoundException(ERROR_MESSAGE.ClusterNotFound);
-    }
-
-    this.logger.log(
-      `Found cluster: "${clusterDetail.label}" with ${clusterDetail.items.length} items`,
-    );
+  async startGeneration(label: string, items: string[]): Promise<StartArticleResponse> {
+    this.logger.log(`Starting article generation for label: ${label}`);
 
     const articleId = randomUUID();
     const job: ArticleGenerationJob = {
       articleId,
-      jobId,
-      slug,
+      label,
+      items,
       status: 'pending',
       html: null,
       error: null,
@@ -83,7 +69,7 @@ export class ArticleService {
     this.jobs.set(articleId, job);
 
     // Start generation in background (non-blocking)
-    this.runAgenticLoop(articleId, clusterDetail).catch((err) => {
+    this.runAgenticLoop(articleId, label, items).catch((err) => {
       const existingJob = this.jobs.get(articleId);
       if (existingJob && existingJob.status !== 'completed') {
         existingJob.status = 'failed';
@@ -112,10 +98,7 @@ export class ArticleService {
     };
   }
 
-  private async runAgenticLoop(
-    articleId: string,
-    clusterDetail: ClusterDetailResponse,
-  ): Promise<void> {
+  private async runAgenticLoop(articleId: string, label: string, items: string[]): Promise<void> {
     this.logger.log(`Starting agentic loop for articleId: ${articleId}`);
 
     const job = this.jobs.get(articleId);
@@ -126,7 +109,7 @@ export class ArticleService {
 
     const apiKey = this.configService.get<string>('OPENAI_API_KEY');
     if (!apiKey) {
-      this.logger.error('OPENAI_API_KEY is not configured');
+      this.logger.error('OPENAI_API_KEY not configured');
       job.status = 'failed';
       job.error = ERROR_MESSAGE.OpenAiKeyNotConfigured;
       job.completedAt = Date.now();
@@ -139,10 +122,10 @@ export class ArticleService {
 
     job.status = 'generating';
 
-    const userPrompt = ARTICLE_USER_PROMPT_TEMPLATE.replace(
-      '{topic_label}',
-      clusterDetail.label,
-    ).replace('{topic_bullets}', clusterDetail.items.map((item) => `- ${item}`).join('\n'));
+    const userPrompt = ARTICLE_USER_PROMPT_TEMPLATE.replace('{topic_label}', label).replace(
+      '{topic_bullets}',
+      items.map((item) => `- ${item}`).join('\n'),
+    );
 
     const messages: ChatMessage[] = [
       { role: 'system', content: ARTICLE_SYSTEM_PROMPT },
@@ -234,8 +217,7 @@ export class ArticleService {
         // Model returned content without validating - remind it to validate
         messages.push({
           role: 'user',
-          content:
-            'You returned HTML without validating it. Please call the validate_microdata tool with your HTML to ensure the microdata is correct before providing the final response.',
+          content: ARTICLE_VALIDATION_REMINDER_PROMPT,
         });
       } else {
         // Unexpected finish reason
