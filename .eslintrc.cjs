@@ -9,7 +9,7 @@ module.exports = {
         tsconfigRootDir: __dirname,
         sourceType: 'module',
       },
-      excludedFiles: ['backend/src/cluster/constants.ts'],
+      excludedFiles: ['backend/src/constants.ts'],
       plugins: ['@typescript-eslint', '@angular-eslint'],
       extends: [
         'eslint:recommended',

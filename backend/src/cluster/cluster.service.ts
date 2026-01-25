@@ -1,7 +1,6 @@
 import { BadRequestException, Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { randomUUID } from 'crypto';
-import { LLM_MAX_RETRIES, LLM_MODEL, ERROR_MESSAGE } from './constants';
-import { SuggestionEndpoints } from './constants';
+import { LLM_MAX_RETRIES, LLM_MODELS, ERROR_MESSAGE, SuggestionEndpoints } from '../constants';
 import {
   ClusterDetailResponse,
   ClusterGroup,
@@ -112,7 +111,7 @@ export class ClusterService {
       return null;
     }
 
-    const model = LLM_MODEL;
+    const model = LLM_MODELS.Gpt4oMini;
     const prompt = {
       role: 'user',
       content: `Cluster the following search suggestions into thematic groups. Return strict JSON with the shape: {"clusters":[{"label":"...","items":["..."]}],"orphans":["..."]}. Do not include any markdown. Suggestions: ${JSON.stringify(
