@@ -1,6 +1,12 @@
-import { BadRequestException, Injectable, ServiceUnavailableException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
+import { createResponseSchema } from './schema';
 import { LLM_MAX_RETRIES, LLM_MODELS, ERROR_MESSAGE, SuggestionEndpoints } from '../constants';
 import {
   ClusterDetailResponse,
@@ -12,6 +18,7 @@ import {
 
 @Injectable()
 export class ClusterService {
+  private readonly logger = new Logger(ClusterService.name);
   private readonly jobs = new Map<string, ClusterJob>();
 
   constructor(private readonly configService: ConfigService) {}
@@ -22,11 +29,15 @@ export class ClusterService {
       throw new BadRequestException(ERROR_MESSAGE.QueryRequired);
     }
 
+    this.logger.log(`Creating job for query: "${trimmed}"`);
+
     const suggestions = await this.fetchSuggestions(trimmed);
     const uniqueQueries = Array.from(new Set(suggestions));
+    this.logger.log(`Fetched ${uniqueQueries.length} unique suggestions`);
 
     const llmResult = await this.clusterWithLLM(uniqueQueries);
     if (!llmResult) {
+      this.logger.error('LLM clustering failed - no result returned');
       throw new ServiceUnavailableException(ERROR_MESSAGE.LlmUnavailable);
     }
 
@@ -111,15 +122,24 @@ export class ClusterService {
   private async clusterWithLLM(queries: string[]) {
     const apiKey = this.configService.get<string>('OPENAI_API_KEY');
     if (!apiKey) {
+      this.logger.error('OPENAI_API_KEY is not configured');
       return null;
     }
+    this.logger.log(`OPENAI_API_KEY is configured (length: ${apiKey.length})`);
 
     const model = LLM_MODELS.Gpt4oMini;
+    this.logger.log(`Using model: ${model}`);
     const prompt = {
       role: 'user',
-      content: `Cluster the following search suggestions into thematic groups. Return strict JSON with the shape: {"clusters":[{"label":"...","items":["..."]}],"orphans":["..."]}. Do not include any markdown. Suggestions: ${JSON.stringify(
-        queries,
-      )}`,
+      content: `You will receive an array of phrases. Cluster them into thematic groups and return STRICT JSON only, with the shape: {"clusters":[{"label":"...","items":["..."]}],"orphans":["..."]}. Do NOT include any markdown, commentary, or extra fields.
+
+Important rules (apply these exactly):
+- Treat short country codes and common location names as LOCATION MODIFIERS.
+- Do NOT place a location-specific items into a general cluster (e.g., "Selling a house - General") unless other items in the cluster share the same location modifier or the location does not change the intent or required guidance. For example, "how to sell a house uk" should be considered location-specific and should not be merged into a pure general "how to sell a house" cluster unless you are sure the guidance is identical.
+- Normalize punctuation and whitespace when comparing suggestions, but preserve meaningful words. Ignore casing.
+- Only include an item in a cluster if it clearly matches the cluster theme. Otherwise, put it into "orphans".
+- If a suggestion contains multiple clear intents, you may include it in multiple clusters.
+Here are the phrases: ${JSON.stringify(queries)}`,
     };
 
     const maxAttempts = LLM_MAX_RETRIES;
@@ -139,30 +159,38 @@ export class ClusterService {
       });
 
       if (response.ok) {
+        this.logger.log(`Attempt ${attempt}: Response OK`);
         const payload = (await response.json()) as {
           choices?: Array<{ message?: { content?: string } }>;
         };
 
         const content = payload.choices?.[0]?.message?.content;
         if (content) {
-          try {
-            const parsed = JSON.parse(content) as {
-              clusters: Array<{ label: string; items: string[] }>;
-              orphans: string[];
-            };
-
-            return this.buildGroups(parsed.clusters ?? [], parsed.orphans ?? [], queries);
-          } catch {
-            // Fall through to retry.
+          const validated = this.validateLLMResponseSchema(content, queries);
+          if (validated) {
+            this.logger.log(
+              `Successfully validated LLM response: ${validated.clusters.length} clusters, ${validated.orphans.length} orphans`,
+            );
+            return this.buildGroups(validated.clusters, validated.orphans, queries);
           }
+
+          this.logger.warn(`Attempt ${attempt}: LLM response failed validation; will retry`);
+        } else {
+          this.logger.warn(`Attempt ${attempt}: No content in response`);
         }
+      } else {
+        const errorText = await response.text();
+        this.logger.error(`Attempt ${attempt}: API error ${response.status}: ${errorText}`);
       }
 
       if (attempt < maxAttempts) {
-        await this.sleep(300 * Math.pow(2, attempt - 1));
+        const delay = 300 * Math.pow(2, attempt - 1);
+        this.logger.log(`Retrying in ${delay}ms...`);
+        await this.sleep(delay);
       }
     }
 
+    this.logger.error(`All ${maxAttempts} attempts failed`);
     return null;
   }
 
@@ -210,6 +238,34 @@ export class ClusterService {
     }
 
     return { clusters: cleanedClusters, orphans: cleanedOrphans };
+  }
+
+  private validateLLMResponseSchema(rawContent: string, original: string[]) {
+    // Use zod for schema validation. We allow extracting a JSON object from surrounding text.
+    const tryParse = (text: string): unknown | null => {
+      try {
+        return JSON.parse(text);
+      } catch {
+        return null;
+      }
+    };
+
+    let parsed = tryParse(rawContent) as unknown | null;
+    if (!parsed) {
+      const match = rawContent.match(/(\{[\s\S]*\})/);
+      if (match) parsed = tryParse(match[1]);
+    }
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
+
+    // Use schema from dedicated module (creates a schema closed over `original`).
+    const ResponseSchema = createResponseSchema(original);
+    const result = ResponseSchema.safeParse(parsed);
+    if (!result.success) {
+      this.logger.warn('LLM response did not match schema', result.error.format());
+      return null;
+    }
+
+    return { clusters: result.data.clusters, orphans: result.data.orphans };
   }
 
   private slugify(value: string) {
