@@ -7,12 +7,15 @@ async function bootstrap() {
   const corsOrigin = process.env.CORS_ORIGIN;
   const defaultOrigin = ['http://localhost:4200'];
   const origins = corsOrigin
-    ? corsOrigin.split(',').map((origin) => origin.trim()).filter(Boolean)
+    ? corsOrigin
+        .split(',')
+        .map((origin) => origin.trim())
+        .filter(Boolean)
     : defaultOrigin;
 
   app.enableCors({
     origin: process.env.NODE_ENV === 'production' ? origins : origins,
-    credentials: false
+    credentials: false,
   });
   await app.listen(3000);
 }
