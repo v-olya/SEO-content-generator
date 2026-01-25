@@ -1,11 +1,4 @@
-<button
-  pButton
-  icon="pi pi-arrow-left"
-  [label]="UILabel.Back"
-  text
-  routerLink="/"
-  [attr.aria-label]="AriaLabel.BackToHome"
-></button>
+<button pButton icon="pi pi-arrow-left" [label]="UILabel.Back" text routerLink="/"></button>
 
 <div aria-live="polite" aria-atomic="true">
   @if (loading()) {
@@ -43,8 +36,24 @@
         [disabled]="isGenerating()"
         [loading]="isGenerating()"
         (click)="generateArticle()"
-        [attr.aria-label]="AriaLabel.GenerateArticle"
       ></button>
+      <button
+        pButton
+        [label]="UILabel.GenerateImage"
+        (click)="generateImage()"
+        [disabled]="isGeneratingImage()"
+        [loading]="isGeneratingImage()"
+        [disabled]="!articleHtml()"
+      ></button>
+      <button
+        pButton
+        [label]="UILabel.CopyHtml"
+        (click)="copyHtmlToClipboard()"
+        [disabled]="!articleHtml()"
+      ></button>
+      @if (copied(); as copied) {
+        <span class="copy-tooltip" role="status" aria-live="polite">Content copied</span>
+      }
     </ng-template>
   </p-card>
 

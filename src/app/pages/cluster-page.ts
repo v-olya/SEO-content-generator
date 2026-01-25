@@ -59,10 +59,19 @@ export class ClusterPage implements OnInit {
   protected readonly articleError = signal<string | null>(null);
   private articleId: string | null = null;
 
+  // Image generation state
+  protected readonly imageGenerating = signal(false);
+  protected readonly imageDataUrl = signal<string | null>(null);
+  protected readonly imageError = signal<string | null>(null);
+  // Copy feedback state
+  protected readonly copied = signal(false);
+
   protected readonly isGenerating = computed(() => {
     const status = this.articleStatus();
     return status === 'pending' || status === 'generating' || status === 'validating';
   });
+
+  protected readonly isGeneratingImage = computed(() => this.imageGenerating());
 
   protected readonly articleStatusLabel = computed(() => {
     const status = this.articleStatus();
@@ -128,7 +137,7 @@ export class ClusterPage implements OnInit {
     this.articleHtml.set(null);
 
     this.api
-      .startArticleGeneration(cluster.jobId, cluster.slug)
+      .startArticleGeneration(cluster.label, cluster.items)
       .pipe(
         tap((result) => {
           this.articleId = result.articleId;
@@ -163,6 +172,56 @@ export class ClusterPage implements OnInit {
           this.articleError.set(ErrorMessage.ArticleGenerationFailed);
         },
       });
+  }
+
+  protected generateImage(): void {
+    const cluster = this.response();
+    if (!cluster) return;
+
+    this.imageGenerating.set(true);
+    this.imageError.set(null);
+
+    this.api
+      .generateImage(cluster.label, cluster.items)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.imageDataUrl.set(result.dataUrl);
+
+          // Insert image with proper schema.org ImageObject microdata into the article HTML
+          const alt = `Illustration for ${cluster.label}`;
+          const figure = `<figure itemscope itemtype="https://schema.org/ImageObject"><img src="${result.dataUrl}" alt="${alt}" itemprop="contentUrl" style="width: 100%; height: auto; display: block; border-radius: 8px;" /><figcaption itemprop="caption" class="visually-hidden">${alt}</figcaption><meta itemprop="width" content="1792" /><meta itemprop="height" content="1024" /></figure>`;
+
+          const existing = this.articleHtml() || '';
+          // Prepend figure to existing article HTML so it appears as hero image
+          this.articleHtml.set(figure + existing);
+          this.imageGenerating.set(false);
+        },
+        error: () => {
+          this.imageError.set('Image generation failed');
+          this.imageGenerating.set(false);
+        },
+      });
+  }
+
+  protected copyHtmlToClipboard(): void {
+    const html = this.articleHtml();
+    if (!html) return;
+    if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(html)
+        .then(() => {
+          this.articleError.set(null);
+          this.copied.set(true);
+          // auto-hide after 2 seconds
+          setTimeout(() => this.copied.set(false), 2000);
+        })
+        .catch(() => {
+          this.articleError.set('Failed to copy HTML to clipboard');
+        });
+    } else {
+      this.articleError.set('Clipboard API not available');
+    }
   }
 
   private getJobId(slug: string | null): string | null {
