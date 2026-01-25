@@ -1,11 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ClusterController } from './cluster/cluster.controller';
-import { ClusterService } from './cluster/cluster.service';
+import { ClusterModule } from './cluster/cluster.module';
+import { ArticleModule } from './article/article.module';
 
 @Module({
-  imports: [ConfigModule.forRoot()],
-  controllers: [ClusterController],
-  providers: [ClusterService],
+  imports: [ConfigModule.forRoot(), ClusterModule, ArticleModule],
 })
 export class AppModule {}
