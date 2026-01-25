@@ -1,3 +1,6 @@
+@if (errorHandler.error(); as message) {
+  <p-message severity="error" [style]="{ margin: '1rem' }">{{ message }}</p-message>
+}
 
 <main>
   <router-outlet />

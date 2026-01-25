@@ -3,6 +3,8 @@ export enum ErrorMessage {
   ClusterLoadFailed = 'We could not load this cluster.',
   ClusterServiceUnavailable = 'We could not reach the clustering service.',
   NoItemsFound = 'No items found.',
+  NetworkError = 'Network error occurred. Please check your connection.',
+  UnexpectedError = 'An unexpected error occurred. Please refresh the page.',
 }
 
 export enum ValidationMessage {
