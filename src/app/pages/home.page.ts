@@ -23,6 +23,7 @@ import {
   StatusMessage,
   ValidationMessage,
   CLUSTER_COLORS,
+  StorageKey,
 } from '../constants';
 
 @Component({
@@ -70,9 +71,13 @@ export class HomePage {
   protected readonly ValidationMessage = ValidationMessage;
 
   constructor() {
-    const stored = this.storage.getItem<ClusterResponse>('cluster-response');
-    if (stored) {
-      this.response.set(stored);
+    const storedResponse = this.storage.getItem<ClusterResponse>(StorageKey.ClusterResponse);
+    if (storedResponse) {
+      this.response.set(storedResponse);
+    }
+    const storedQuery = this.storage.getItem<string>(StorageKey.ClusterQuery);
+    if (storedQuery) {
+      this.form.controls.query.setValue(storedQuery);
     }
   }
 
@@ -97,6 +102,7 @@ export class HomePage {
         next: (result) => {
           this.response.set(result);
           this.storeResponse(result);
+          this.storage.setItem(StorageKey.ClusterQuery, query);
           this.loading.set(false);
         },
         error: (error: unknown) => {
@@ -104,6 +110,23 @@ export class HomePage {
           this.loading.set(false);
         },
       });
+  }
+
+  onQueryBlur() {
+    const currentQuery = this.form.controls.query.value?.trim();
+    const storedQuery = this.storage.getItem<string>(StorageKey.ClusterQuery);
+    if (storedQuery && currentQuery !== storedQuery) {
+      this.response.set(null);
+      this.storage.removeItem(StorageKey.ClusterResponse);
+      this.storage.removeItem(StorageKey.ClusterQuery);
+      // Remove all cluster-job:* keys
+      const keys = Object.keys(sessionStorage);
+      keys.forEach((key) => {
+        if (key.startsWith(StorageKey.ClusterJobPrefix + ':')) {
+          this.storage.removeItem(key);
+        }
+      });
+    }
   }
 
   openCluster(jobId: string, slug: string) {
@@ -126,11 +149,11 @@ export class HomePage {
   }
 
   private getJobKey(slug: string) {
-    return `cluster-job:${slug}`;
+    return `${StorageKey.ClusterJobPrefix}:${slug}`;
   }
 
   private storeResponse(response: ClusterResponse) {
-    this.storage.setItem('cluster-response', response);
+    this.storage.setItem(StorageKey.ClusterResponse, response);
   }
 
   private toErrorMessage(error: unknown) {

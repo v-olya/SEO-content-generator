@@ -11,6 +11,7 @@
           [placeholder]="UIPlaceholder.SearchQuery"
           [attr.aria-label]="AriaLabel.SearchQueryInput"
           [attr.aria-invalid]="queryControl.invalid && queryControl.touched"
+          (blur)="onQueryBlur()"
         />
         @if (queryControl.invalid && queryControl.touched) {
           <span id="query-error" class="error-message" role="alert">
