@@ -139,6 +139,7 @@ Important rules (apply these exactly):
 - Normalize punctuation and whitespace when comparing suggestions, but preserve meaningful words. Ignore casing.
 - Only include an item in a cluster if it clearly matches the cluster theme. Otherwise, put it into "orphans".
 - If a suggestion contains multiple clear intents, you may include it in multiple clusters.
+- Identify specific brands, products, or named entities (e.g., "Coffee 2.0", "iPhone 15") and treat them as distinct from general categories. Do not cluster specific product names or brand names with general thematic clusters unless the cluster is specifically about that brand/product.
 Here are the phrases: ${JSON.stringify(queries)}`,
     };
 
