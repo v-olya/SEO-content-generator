@@ -20,7 +20,7 @@ import { TagModule } from 'primeng/tag';
 import { ClusterApiService } from '../services/cluster-api.service';
 import { StorageService } from '../services/storage.service';
 import { ArticleJobStatus, ArticleStatusResponse, ClusterDetailResponse } from '../types';
-import { ErrorMessage, UILabel, AriaLabel, StatusMessage } from '../constants';
+import { ErrorMessage, UILabel, AriaLabel, StatusMessage, StorageKey } from '../constants';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
@@ -176,6 +176,6 @@ export class ClusterPage implements OnInit {
       return null;
     }
 
-    return this.storage.getItem<string>(`cluster-job:${slug}`);
+    return this.storage.getItem<string>(`${StorageKey.ClusterJobPrefix}:${slug}`);
   }
 }
