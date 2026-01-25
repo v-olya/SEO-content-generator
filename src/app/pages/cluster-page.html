@@ -1,4 +1,11 @@
-<button pButton icon="pi pi-arrow-left" [label]="UILabel.Back" text routerLink="/"></button>
+<button
+  class="back-button"
+  pButton
+  icon="pi pi-arrow-left"
+  [label]="UILabel.Back"
+  text
+  routerLink="/"
+></button>
 
 <div aria-live="polite" aria-atomic="true">
   @if (loading()) {
@@ -15,6 +22,8 @@
     <ng-template pTemplate="title">
       @if (cluster.type === 'cluster') {
         <h1 id="cluster-title">{{ cluster.label }}</h1>
+      } @else {
+        <h1 id="cluster-title">{{ UILabel.UnsortedKey }}</h1>
       }
     </ng-template>
     <ng-template pTemplate="content">

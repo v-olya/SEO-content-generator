@@ -8,7 +8,7 @@ Small monorepo app that creates well-structured content from a general search qu
 ## What this project does
 
 - Collects search suggestions and related queries for a seed phrase.
-- Clusters and groups key phrases into topic groups.
+- Clusters the key phrases into topic groups.
 - Generates a structured SEO article from a chosen query/cluster.
 - Produces an accompanying image and Rich Results markup as schema.org microdata (the agent enforces microdata and validates it using the `validate_microdata` tool via Rich Results Web Testing Tool).
 
