@@ -22,6 +22,7 @@ import {
   AriaLabel,
   StatusMessage,
   ValidationMessage,
+  CLUSTER_COLORS,
 } from '../constants';
 
 @Component({
@@ -118,6 +119,10 @@ export class HomePage {
     }
 
     return items.join('\n');
+  }
+
+  getClusterColor(index: number) {
+    return CLUSTER_COLORS[index % CLUSTER_COLORS.length];
   }
 
   private getJobKey(slug: string) {

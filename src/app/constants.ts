@@ -43,3 +43,20 @@ export enum StorageKey {
   ClusterResponse = 'cluster-response',
   ClusterJobPrefix = 'cluster-job',
 }
+
+export const CLUSTER_COLORS = [
+  { name: 'blue', bg: '#5B9BD5', border: '#4A7FB0' },
+  { name: 'green', bg: '#70AD47', border: '#5A8C3A' },
+  { name: 'purple', bg: '#9B7EBA', border: '#7E6599' },
+  { name: 'orange', bg: '#ED7D31', border: '#C66428' },
+  { name: 'teal', bg: '#4BACC6', border: '#3C8DA0' },
+  { name: 'pink', bg: '#D57EA6', border: '#B06888' },
+  { name: 'indigo', bg: '#7F8FA6', border: '#657285' },
+  { name: 'amber', bg: '#C9A86A', border: '#A48855' },
+] as const;
+
+export const ORPHAN_COLOR = {
+  name: 'slate',
+  bg: '#8B96A3',
+  border: '#6F7983',
+} as const;
