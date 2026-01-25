@@ -31,3 +31,46 @@ export interface ClusterDetailResponse {
   items: string[];
   type: 'cluster' | 'orphan';
 }
+
+// Article generation types
+export type ArticleJobStatus =
+  | 'pending'
+  | 'generating'
+  | 'validating'
+  | 'completed'
+  | 'failed'
+  | 'timeout';
+
+export interface ArticleGenerationJob {
+  articleId: string;
+  jobId: string;
+  slug: string;
+  status: ArticleJobStatus;
+  html: string | null;
+  error: string | null;
+  createdAt: number;
+  completedAt: number | null;
+}
+
+export interface StartArticleRequest {
+  jobId: string;
+  slug: string;
+}
+
+export interface StartArticleResponse {
+  articleId: string;
+  status: ArticleJobStatus;
+}
+
+export interface ArticleStatusResponse {
+  articleId: string;
+  status: ArticleJobStatus;
+  html: string | null;
+  error: string | null;
+}
+
+export interface MicrodataValidationResult {
+  valid: boolean;
+  errors: string[];
+  warnings: string[];
+}
