@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -8,6 +8,7 @@ import { MessageModule } from 'primeng/message';
 import { TagModule } from 'primeng/tag';
 import { ClusterApiService } from '../services/cluster-api.service';
 import { ClusterDetailResponse } from '../types';
+import { ErrorMessage, UILabel, AriaLabel, StatusMessage } from '../constants';
 
 @Component({
   selector: 'app-cluster-page',
@@ -16,28 +17,28 @@ import { ClusterDetailResponse } from '../types';
   styleUrl: './cluster-page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'page'
-  }
+    class: 'page',
+  },
 })
-export class ClusterPage {
+export class ClusterPage implements OnInit {
   private readonly api = inject(ClusterApiService);
   private readonly route = inject(ActivatedRoute);
   private readonly document = inject(DOCUMENT);
 
-  private readonly loading = signal(true);
-  private readonly errorMessage = signal<string | null>(null);
-  private readonly response = signal<ClusterDetailResponse | null>(null);
+  protected readonly loading = signal(true);
+  protected readonly errorMessage = signal<string | null>(null);
+  protected readonly response = signal<ClusterDetailResponse | null>(null);
 
-  protected readonly isBusy = computed(() => this.loading());
-  protected readonly error = computed(() => this.errorMessage());
-  protected readonly detail = computed(() => this.response());
+  protected readonly UILabel = UILabel;
+  protected readonly AriaLabel = AriaLabel;
+  protected readonly StatusMessage = StatusMessage;
 
-  constructor() {
+  ngOnInit() {
     const slug = this.route.snapshot.paramMap.get('slug');
     const jobId = this.getJobId(slug);
 
     if (!jobId || !slug) {
-      this.errorMessage.set('Missing cluster identifier.');
+      this.errorMessage.set(ErrorMessage.MissingClusterIdentifier);
       this.loading.set(false);
       return;
     }
@@ -48,9 +49,9 @@ export class ClusterPage {
         this.loading.set(false);
       },
       error: () => {
-        this.errorMessage.set('We could not load this cluster.');
+        this.errorMessage.set(ErrorMessage.ClusterLoadFailed);
         this.loading.set(false);
-      }
+      },
     });
   }
 

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -49,13 +49,9 @@ export class HomePage {
     query: new FormControl('', [Validators.required, Validators.minLength(3)]),
   });
 
-  private readonly loading = signal(false);
-  private readonly errorMessage = signal<string | null>(null);
-  private readonly response = signal<ClusterResponse | null>(null);
-
-  protected readonly isBusy = computed(() => this.loading());
-  protected readonly error = computed(() => this.errorMessage());
-  protected readonly result = computed(() => this.response());
+  protected readonly loading = signal(false);
+  protected readonly errorMessage = signal<string | null>(null);
+  protected readonly response = signal<ClusterResponse | null>(null);
 
   protected get queryControl() {
     return this.form.controls.query;

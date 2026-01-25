@@ -25,8 +25,8 @@
           pButton
           type="submit"
           [label]="UILabel.Clusterize"
-          [disabled]="isBusy() || form.invalid"
-          [loading]="isBusy()"
+          [disabled]="loading() || form.invalid"
+          [loading]="loading()"
           icon="pi pi-sitemap"
           [attr.aria-label]="AriaLabel.SubmitQuery"
         ></button>
@@ -36,7 +36,7 @@
 </p-card>
 
 <div aria-live="polite" aria-atomic="true">
-  @if (isBusy()) {
+  @if (loading()) {
     <p-message severity="info" role="status">
       <p-progressSpinner
         strokeWidth="4"
@@ -47,12 +47,12 @@
     </p-message>
   }
 
-  @if (error(); as message) {
+  @if (errorMessage(); as message) {
     <p-message severity="error" role="alert">{{ message }}</p-message>
   }
 </div>
 
-@if (result(); as response) {
+@if (response(); as response) {
   <p-divider></p-divider>
   <div class="section-header">
     <h2 id="clustered-themes-heading">{{ UILabel.ClusteredThemes }}</h2>

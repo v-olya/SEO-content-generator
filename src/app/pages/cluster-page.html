@@ -1,29 +1,48 @@
-<button pButton icon="pi pi-arrow-left" label="Back" text routerLink="/"></button>
+<button
+  pButton
+  icon="pi pi-arrow-left"
+  [label]="UILabel.Back"
+  text
+  routerLink="/"
+  [attr.aria-label]="AriaLabel.BackToHome"
+></button>
 
-@if (isBusy()) {
-  <p-message severity="info" text="Loading cluster details…"></p-message>
-}
+<div aria-live="polite" aria-atomic="true">
+  @if (loading()) {
+    <p-message severity="info" role="status">{{ StatusMessage.LoadingClusterDetails }}</p-message>
+  }
 
-@if (error(); as message) {
-  <p-message severity="error" [text]="message"></p-message>
-}
+  @if (errorMessage(); as message) {
+    <p-message severity="error" role="alert">{{ message }}</p-message>
+  }
+</div>
 
-@if (detail(); as cluster) {
+@if (response(); as cluster) {
   <p-card>
     <ng-template pTemplate="title">
       @if (cluster.type === 'cluster') {
-        {{ cluster.label }}
+        <h1 id="cluster-title">{{ cluster.label }}</h1>
       }
     </ng-template>
     <ng-template pTemplate="content">
-      <div class="chip-grid">
+      <div
+        class="chip-grid"
+        role="list"
+        aria-labelledby="cluster-title"
+        [attr.aria-label]="'Cluster items for ' + cluster.label"
+      >
         @for (item of cluster.items; track item) {
-          <p-chip [label]="item"></p-chip>
+          <p-chip [label]="item" role="listitem"></p-chip>
         }
       </div>
     </ng-template>
     <ng-template pTemplate="footer">
-      <button pButton label="Coming soon..." disabled></button>
+      <button
+        pButton
+        [label]="UILabel.ComingSoon"
+        disabled
+        [attr.aria-label]="AriaLabel.FeatureComingSoon"
+      ></button>
     </ng-template>
   </p-card>
 }
