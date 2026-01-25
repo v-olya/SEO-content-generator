@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable, ServiceUnavailableException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
 import { LLM_MAX_RETRIES, LLM_MODELS, ERROR_MESSAGE, SuggestionEndpoints } from '../constants';
 import {
@@ -12,6 +13,8 @@ import {
 @Injectable()
 export class ClusterService {
   private readonly jobs = new Map<string, ClusterJob>();
+
+  constructor(private readonly configService: ConfigService) {}
 
   async createJob(query: string): Promise<ClusterResponse> {
     const trimmed = query?.trim();
@@ -106,7 +109,7 @@ export class ClusterService {
   }
 
   private async clusterWithLLM(queries: string[]) {
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey = this.configService.get<string>('OPENAI_API_KEY');
     if (!apiKey) {
       return null;
     }
