@@ -21,10 +21,11 @@ export enum UILabel {
   UnsortedIdeas = 'Unsorted ideas',
   ClusterSearchSuggestions = 'Cluster search suggestions',
   GenerateContent = 'Generate content for this cluster',
-  GenerateArticle = 'Generate Article',
+  GenerateArticle = 'Generate an Article',
   Generating = 'Generating...',
-  GeneratedArticle = 'Generated Article',
   TryAgain = 'Try Again',
+  GenerateImage = 'Generate an Image',
+  CopyHtml = 'Copy HTML to clipboard',
 }
 
 export enum UIPlaceholder {
@@ -34,10 +35,8 @@ export enum UIPlaceholder {
 export enum AriaLabel {
   SearchQueryInput = 'Search query to cluster suggestions',
   SubmitQuery = 'Submit search query for clustering',
-  BackToHome = 'Go back to home page',
   FeatureComingSoon = 'Feature coming soon',
   Loading = 'Loading',
-  GenerateArticle = 'Generate an article for this cluster',
   ArticleGenerating = 'Article is being generated',
 }
 
