@@ -1,4 +1,3 @@
-
 # How-to
 
 Single-repo setup with an Angular frontend and a NestJS backend.
@@ -12,15 +11,10 @@ Single-repo setup with an Angular frontend and a NestJS backend.
 
 **Location:** root folder
 
-### Install
-
-```bash
-
-
 ### Development server
 
 ```bash
-npm start
+ng serve
 ```
 
 Open `http://localhost:4200/`. The dev server uses the proxy from `proxy.conf.json` so `/api` calls are forwarded to `http://localhost:3000`.
