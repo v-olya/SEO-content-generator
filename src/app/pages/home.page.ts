@@ -12,6 +12,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { ClusterApiService } from '../services/cluster-api.service';
+import { StorageService } from '../services/storage.service';
 import { ClusterResponse } from '../types';
 import {
   ErrorMessage,
@@ -46,6 +47,7 @@ export class HomePage {
   private readonly api = inject(ClusterApiService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly storage = inject(StorageService);
 
   protected readonly form = new FormGroup({
     query: new FormControl('', [Validators.required, Validators.minLength(3)]),
@@ -66,7 +68,7 @@ export class HomePage {
   protected readonly ValidationMessage = ValidationMessage;
 
   constructor() {
-    const stored = this.readStoredResponse();
+    const stored = this.storage.getItem<ClusterResponse>('cluster-response');
     if (stored) {
       this.response.set(stored);
     }
@@ -86,7 +88,8 @@ export class HomePage {
     this.errorMessage.set(null);
     this.response.set(null);
 
-    this.api.clusterQuery(query)
+    this.api
+      .clusterQuery(query)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
@@ -102,7 +105,7 @@ export class HomePage {
   }
 
   openCluster(jobId: string, slug: string) {
-    sessionStorage.setItem(this.getJobKey(slug), jobId);
+    this.storage.setItem(this.getJobKey(slug), jobId);
     void this.router.navigate(['/', slug], {
       state: { jobId },
     });
@@ -121,20 +124,7 @@ export class HomePage {
   }
 
   private storeResponse(response: ClusterResponse) {
-    sessionStorage.setItem('cluster-response', JSON.stringify(response));
-  }
-
-  private readStoredResponse() {
-    const raw = sessionStorage.getItem('cluster-response');
-    if (!raw) {
-      return null;
-    }
-
-    try {
-      return JSON.parse(raw) as ClusterResponse;
-    } catch {
-      return null;
-    }
+    this.storage.setItem('cluster-response', response);
   }
 
   private toErrorMessage(error: unknown) {
