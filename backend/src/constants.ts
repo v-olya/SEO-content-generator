@@ -6,7 +6,6 @@ export enum SuggestionEndpoints {
 
 export enum LLM_MODELS {
   Gpt4oMini = 'gpt-4o-mini',
-  Gpt4o = 'gpt-4o',
 }
 
 export enum ERROR_MESSAGE {
@@ -18,10 +17,10 @@ export enum ERROR_MESSAGE {
   EmptyOpenAiResponse = 'Empty response from OpenAI',
   UnexpectedFinishReasonTemplate = 'Unexpected finish reason: {reason}',
   MaxIterationsReached = 'Failed to generate valid article after maximum iterations',
-  ClusterNotFound = 'Cluster not found',
+  ImageGenerationFailed = 'Image generation failed',
+  NoImageDataReturned = 'No image data returned',
 }
 
-export const LLM_MODEL = LLM_MODELS.Gpt4oMini;
 export const LLM_MAX_RETRIES = 3;
 
 // Hard timeout for article generation agentic loop.
@@ -123,3 +122,19 @@ export const VALIDATE_MICRODATA_TOOL = {
     },
   },
 };
+
+export const IMAGE_PROMPT_TEMPLATE = `Create a high-quality, photorealistic hero image representing "{label}". Include visual elements or motifs such as: {items}. Style: clean, modern, bright, no text, natural lighting. Composition: single focal subject, 16:9 aspect ratio, 1200x630px, suitable for use as an article hero image.`;
+
+export const ARTICLE_VALIDATION_REMINDER_PROMPT =
+  'You returned HTML without validating it. Please call the validate_microdata tool with your HTML to ensure the microdata is correct before providing the final response.';
+
+export const CLUSTERING_PROMPT_TEMPLATE = `You will receive an array of phrases. Cluster them into thematic groups and return STRICT JSON only, with the shape: {"clusters":[{"label":"...","items":["..."]}],"orphans":["..."]}. Do NOT include any markdown, commentary, or extra fields.
+
+Important rules (apply these exactly):
+- Treat short country codes and common location names as LOCATION MODIFIERS.
+- Do NOT place a location-specific items into a general cluster (e.g., "Selling a house - General") unless other items in the cluster share the same location modifier or the location does not change the intent or required guidance. For example, "how to sell a house uk" should be considered location-specific and should not be merged into a pure general "how to sell a house" cluster unless you are sure the guidance is identical.
+- Normalize punctuation and whitespace when comparing suggestions, but preserve meaningful words. Ignore casing.
+- Only include an item in a cluster if it clearly matches the cluster theme. Otherwise, put it into "orphans".
+- If a suggestion contains multiple clear intents, you may include it in multiple clusters.
+- Identify specific brands, products, or named entities (e.g., "Coffee 2.0", "iPhone 15") and treat them as distinct from general categories. Do not cluster specific product names or brand names with general thematic clusters unless the cluster is specifically about that brand/product.
+Here are the phrases: {queries}`;
