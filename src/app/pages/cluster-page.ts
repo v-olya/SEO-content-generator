@@ -9,6 +9,7 @@ import {
 import { DOCUMENT } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { retry } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { ChipModule } from 'primeng/chip';
@@ -56,7 +57,7 @@ export class ClusterPage implements OnInit {
 
     this.api
       .getClusterDetail(jobId, slug)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(retry({ count: 2, delay: 1000 }), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
           this.response.set(result);

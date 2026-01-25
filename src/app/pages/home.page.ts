@@ -3,6 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { retry } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { DividerModule } from 'primeng/divider';
@@ -90,7 +91,7 @@ export class HomePage {
 
     this.api
       .clusterQuery(query)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(retry({ count: 2, delay: 1000 }), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
           this.response.set(result);
