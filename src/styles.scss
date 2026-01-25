@@ -6,24 +6,122 @@
   box-sizing: border-box;
 }
 
+:root {
+  --primary-color: #525eba;
+  --secondary-color: #04aa42;
+  --submit-color: #c64c1c;
+  --submit-color-hover: #9c2e03;
+  --background-color: #f8fafc;
+  --surface-color: #ffffff;
+  --text-color: #1f2937;
+  --text-muted: #6b7280;
+  --border-color: #e5e7eb;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
 body {
   margin: 0;
-  font-family: var(--p-font-family);
-  background-color: var(--p-surface-ground);
-  color: var(--p-text-color);
-  line-height: 1.5;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
+  min-height: 100vh;
 }
 
 app-root {
   display: block;
   min-height: 100vh;
-  padding: 1rem;
+  padding: 1.5rem;
   max-width: 1200px;
   margin: 0 auto;
 }
 
 @media (min-width: 768px) {
   app-root {
-    padding: 2rem;
+    padding: 3rem 2rem;
   }
+}
+
+/* Global component styles */
+.p-card {
+  box-shadow: var(--shadow);
+  border: none;
+  border-radius: 12px;
+  background: var(--surface-color);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.p-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.p-button {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+/* Only animate hover for enabled buttons */
+.p-button:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+.p-button:not([text]) {
+  background: var(--submit-color);
+  border-color: var(--submit-color);
+  color: white;
+}
+
+.p-button:not([text]):not(:disabled):hover {
+  background: var(--submit-color-hover);
+  border-color: var(--submit-color-hover);
+}
+
+.p-button[type='submit'] {
+  background: var(--submit-color);
+  border-color: var(--submit-color);
+  color: white;
+}
+
+.p-button[type='submit']:not(:disabled):hover {
+  background: var(--submit-color-hover);
+  border-color: var(--submit-color-hover);
+}
+
+.p-inputtext {
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.p-inputtext:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+p {
+  color: var(--text-muted);
 }

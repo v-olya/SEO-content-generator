@@ -30,30 +30,34 @@
       </div>
     </ng-template>
     <ng-template pTemplate="footer">
-      <button
-        pButton
-        [label]="isGenerating() ? UILabel.Generating : UILabel.GenerateArticle"
-        [disabled]="isGenerating()"
-        [loading]="isGenerating()"
-        (click)="generateArticle()"
-      ></button>
-      <button
-        pButton
-        [label]="UILabel.GenerateImage"
-        (click)="generateImage()"
-        [disabled]="isGeneratingImage()"
-        [loading]="isGeneratingImage()"
-        [disabled]="!articleHtml()"
-      ></button>
-      <button
-        pButton
-        [label]="UILabel.CopyHtml"
-        (click)="copyHtmlToClipboard()"
-        [disabled]="!articleHtml()"
-      ></button>
-      @if (copied(); as copied) {
-        <span class="copy-tooltip" role="status" aria-live="polite">Content copied</span>
-      }
+      <div class="action-row">
+        <div class="action-buttons">
+          <button
+            pButton
+            [label]="isGenerating() ? UILabel.Generating : UILabel.GenerateArticle"
+            [disabled]="isGenerating()"
+            [loading]="isGenerating()"
+            (click)="generateArticle()"
+          ></button>
+          <button
+            pButton
+            [label]="UILabel.GenerateImage"
+            (click)="generateImage()"
+            [disabled]="isGeneratingImage()"
+            [loading]="isGeneratingImage()"
+            [disabled]="!articleHtml()"
+          ></button>
+          <button
+            pButton
+            [label]="UILabel.CopyHtml"
+            (click)="copyHtmlToClipboard()"
+            [disabled]="!articleHtml()"
+          ></button>
+        </div>
+        @if (copied(); as copied) {
+          <span class="copy-tooltip" role="status" aria-live="polite">Content copied</span>
+        }
+      </div>
     </ng-template>
   </p-card>
 
