@@ -21,14 +21,21 @@ export class ClusterApiService {
     return this.http.get<ClusterDetailResponse>(`${this.baseUrl}/cluster/${jobId}/${slug}`);
   }
 
-  startArticleGeneration(jobId: string, slug: string) {
+  startArticleGeneration(label: string, items: string[]) {
     return this.http.post<StartArticleResponse>(`${this.baseUrl}/article/generate`, {
-      jobId,
-      slug,
+      label,
+      items,
     });
   }
 
   getArticleStatus(articleId: string) {
     return this.http.get<ArticleStatusResponse>(`${this.baseUrl}/article/status/${articleId}`);
+  }
+
+  generateImage(label: string, items: string[]) {
+    return this.http.post<{ imageId: string; dataUrl: string; prompt: string }>(
+      `${this.baseUrl}/image/generate`,
+      { label, items },
+    );
   }
 }
