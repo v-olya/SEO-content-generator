@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
-import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
 
@@ -19,7 +19,7 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideRouter(routes),
     provideHttpClient(),
-    provideNoopAnimations(),
+    provideAnimations(),
     providePrimeNG({
       theme: {
         preset: Aura,
@@ -28,3 +28,4 @@ export const appConfig: ApplicationConfig = {
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
   ],
 };
+// use deprecated provideAnimations for primmeNG to work correctlys
