@@ -14,6 +14,9 @@ async function bootstrap() {
     origin: corsOrigin.split(','),
     credentials: false,
   });
+
+  app.enableShutdownHooks();
+
   await app.listen(3000);
 }
 
