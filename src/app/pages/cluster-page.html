@@ -39,10 +39,63 @@
     <ng-template pTemplate="footer">
       <button
         pButton
-        [label]="UILabel.ComingSoon"
-        disabled
-        [attr.aria-label]="AriaLabel.FeatureComingSoon"
+        [label]="isGenerating() ? UILabel.Generating : UILabel.GenerateArticle"
+        [disabled]="isGenerating()"
+        [loading]="isGenerating()"
+        (click)="generateArticle()"
+        [attr.aria-label]="AriaLabel.GenerateArticle"
       ></button>
     </ng-template>
   </p-card>
+
+  <!-- Article Generation Status -->
+  @if (articleStatus(); as status) {
+    <section class="article-section" aria-labelledby="article-section-title">
+      <h2 id="article-section-title" class="visually-hidden">Article Generation</h2>
+
+      <div aria-live="polite" aria-atomic="true" class="article-status">
+        @if (isGenerating()) {
+          <p-message severity="info" role="status">
+            <div class="status-content">
+              <p-progressSpinner
+                [style]="{ width: '20px', height: '20px' }"
+                strokeWidth="4"
+                aria-hidden="true"
+              ></p-progressSpinner>
+              <span>{{ articleStatusLabel() }}</span>
+            </div>
+          </p-message>
+        }
+
+        @if (status === 'completed') {
+          <p-message severity="success" role="status">{{ articleStatusLabel() }}</p-message>
+        }
+
+        @if (status === 'failed' || status === 'timeout') {
+          <p-message severity="error" role="alert">
+            {{ articleStatusLabel() }}
+            @if (articleError(); as error) {
+              : {{ error }}
+            }
+          </p-message>
+          <button
+            pButton
+            [label]="UILabel.TryAgain"
+            severity="secondary"
+            (click)="generateArticle()"
+            class="retry-button"
+          ></button>
+        }
+      </div>
+
+      <!-- Generated Article Content -->
+      @if (sanitizedHtml(); as html) {
+        <p-card class="article-card">
+          <ng-template pTemplate="content">
+            <div class="generated-article" [innerHTML]="html"></div>
+          </ng-template>
+        </p-card>
+      }
+    </section>
+  }
 }
