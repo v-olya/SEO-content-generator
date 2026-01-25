@@ -5,6 +5,7 @@ export enum ErrorMessage {
   NoItemsFound = 'No items found.',
   NetworkError = 'Network error occurred. Please check your connection.',
   UnexpectedError = 'An unexpected error occurred. Please refresh the page.',
+  ArticleGenerationFailed = 'Article generation failed. Please try again.',
 }
 
 export enum ValidationMessage {
@@ -20,6 +21,10 @@ export enum UILabel {
   UnsortedIdeas = 'Unsorted ideas',
   ClusterSearchSuggestions = 'Cluster search suggestions',
   GenerateContent = 'Generate content for this cluster',
+  GenerateArticle = 'Generate Article',
+  Generating = 'Generating...',
+  GeneratedArticle = 'Generated Article',
+  TryAgain = 'Try Again',
 }
 
 export enum UIPlaceholder {
@@ -32,11 +37,19 @@ export enum AriaLabel {
   BackToHome = 'Go back to home page',
   FeatureComingSoon = 'Feature coming soon',
   Loading = 'Loading',
+  GenerateArticle = 'Generate an article for this cluster',
+  ArticleGenerating = 'Article is being generated',
 }
 
 export enum StatusMessage {
   LoadingClusterDetails = 'Loading cluster details…',
   ProcessingSearchSuggestions = 'Processing search suggestions…',
+  ArticlePending = 'Starting article generation…',
+  ArticleGenerating = 'Generating article content…',
+  ArticleValidating = 'Validating microdata markup…',
+  ArticleCompleted = 'Article generated successfully!',
+  ArticleFailed = 'Article generation failed.',
+  ArticleTimeout = 'Article generation timed out.',
 }
 
 export enum StorageKey {
