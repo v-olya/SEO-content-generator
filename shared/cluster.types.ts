@@ -43,9 +43,11 @@ export type ArticleJobStatus =
 
 export interface ArticleGenerationJob {
   articleId: string;
-  jobId: string;
-  slug: string;
+  jobId?: string;
+  slug?: string;
   status: ArticleJobStatus;
+  label: string;
+  items: string[];
   html: string | null;
   error: string | null;
   createdAt: number;
@@ -53,8 +55,8 @@ export interface ArticleGenerationJob {
 }
 
 export interface StartArticleRequest {
-  jobId: string;
-  slug: string;
+  label: string;
+  items: string[];
 }
 
 export interface StartArticleResponse {
@@ -73,4 +75,16 @@ export interface MicrodataValidationResult {
   valid: boolean;
   errors: string[];
   warnings: string[];
+}
+
+// Image generation types
+export interface StartImageRequest {
+  label: string;
+  items: string[];
+}
+
+export interface StartImageResponse {
+  imageId: string;
+  dataUrl: string; // data:image/png;base64,...
+  prompt: string;
 }
