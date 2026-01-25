@@ -26,27 +26,72 @@
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
+  align-items: flex-start;
+
+  input {
+    flex: 1;
+    min-width: 240px;
+  }
+
+  button {
+    flex-shrink: 0;
+  }
 }
 
-.form-row input {
-  flex: 1;
-  min-width: 240px;
+.section-header {
+  margin-bottom: 1rem;
+
+  h2 {
+    margin: 0;
+    color: var(--p-text-color);
+  }
 }
 
 .badge-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .cluster-badge {
-  display: flex;
-  align-items: center;
-  gap: 0;
+  display: inline-flex;
+  align-items: stretch;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--p-surface-50);
+  border: 1px solid var(--p-surface-200);
+
+  .badge-label {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: none;
+  }
+
+  .badge-action {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-left: 1px solid var(--p-surface-300);
+  }
 }
 
-.badge-action {
-  flex: 0 0 auto;
+@media (max-width: 640px) {
+  .form-row {
+    flex-direction: column;
+
+    input,
+    button {
+      width: 100%;
+    }
+  }
+
+  .badge-grid {
+    gap: 0.75rem;
+  }
+
+  .cluster-badge {
+    width: 100%;
+  }
 }
 
 .badge-label.p-button {
@@ -68,19 +113,7 @@
   gap: 1rem;
 }
 
-.query-form__field {
-  grid-template-columns: 1fr;
-}
-
 .cluster-tooltip .p-tooltip-text {
   white-space: pre-line;
   max-width: 320px;
-}
-
-.error-message {
-  display: block;
-  color: var(--red-500);
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
-  margin-bottom: 0.5rem;
 }

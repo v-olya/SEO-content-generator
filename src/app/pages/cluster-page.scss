@@ -1,6 +1,6 @@
 .page {
   display: grid;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .chip-grid {
@@ -8,4 +8,13 @@
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-top: 1rem;
+}
+@media (max-width: 640px) {
+  .page {
+    gap: 1rem;
+  }
+
+  .chip-grid {
+    gap: 0.375rem;
+  }
 }

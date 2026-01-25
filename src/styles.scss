@@ -1,3 +1,29 @@
+@import 'primeicons/primeicons.css';
 
-@import "primeicons/primeicons.css";
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
+body {
+  margin: 0;
+  font-family: var(--p-font-family);
+  background-color: var(--p-surface-ground);
+  color: var(--p-text-color);
+  line-height: 1.5;
+}
+
+app-root {
+  display: block;
+  min-height: 100vh;
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  app-root {
+    padding: 2rem;
+  }
+}
