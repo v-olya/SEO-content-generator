@@ -62,7 +62,6 @@ export class ClusterPage implements OnInit {
   // Article generation state
   protected readonly articleStatus = signal<ArticleJobStatus | null>(null);
   protected readonly articleHtml = signal<string | null>(null);
-  protected readonly articleError = signal<string | null>(null);
   private articleId: string | null = null;
 
   // Image generation state
@@ -188,7 +187,6 @@ export class ClusterPage implements OnInit {
     if (!cluster) return;
 
     this.articleStatus.set('pending');
-    this.articleError.set(null);
     this.articleHtml.set(null);
 
     this.api
@@ -206,9 +204,6 @@ export class ClusterPage implements OnInit {
               if (status.html) {
                 this.articleHtml.set(status.html);
               }
-              if (status.error) {
-                this.articleError.set(status.error);
-              }
             }),
             takeWhile(
               (status: ArticleStatusResponse) =>
@@ -224,7 +219,6 @@ export class ClusterPage implements OnInit {
       .subscribe({
         error: () => {
           this.articleStatus.set('failed');
-          this.articleError.set(ErrorMessage.ArticleGenerationFailed);
         },
       });
   }
@@ -281,7 +275,6 @@ export class ClusterPage implements OnInit {
       navigator.clipboard
         .writeText(html)
         .then(() => {
-          this.articleError.set(null);
           this.copied.set(true);
           // auto-hide after 2 seconds
           timer(2000)
@@ -289,10 +282,8 @@ export class ClusterPage implements OnInit {
             .subscribe(() => this.copied.set(false));
         })
         .catch(() => {
-          this.articleError.set('Failed to copy HTML to clipboard');
+          // Handle error silently
         });
-    } else {
-      this.articleError.set('Clipboard API not available');
     }
   }
 

@@ -95,9 +95,6 @@
         @if (status === 'failed' || status === 'timeout') {
           <p-message severity="error" role="alert">
             {{ articleStatusLabel() }}
-            @if (articleError(); as error) {
-              : {{ error }}
-            }
           </p-message>
           <button
             pButton

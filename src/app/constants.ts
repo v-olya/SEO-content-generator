@@ -5,7 +5,6 @@ export enum ErrorMessage {
   NoItemsFound = 'No items found.',
   NetworkError = 'Network error occurred. Please check your connection.',
   UnexpectedError = 'An unexpected error occurred. Please refresh the page.',
-  ArticleGenerationFailed = 'Article generation failed. Please try again.',
 }
 
 export enum ValidationMessage {
@@ -48,8 +47,8 @@ export enum StatusMessage {
   ArticleGenerating = 'Generating article content…',
   ArticleValidating = 'Validating microdata markup…',
   ArticleCompleted = 'Article generated successfully!',
-  ArticleFailed = 'Article generation failed.',
-  ArticleTimeout = 'Article generation timed out.',
+  ArticleFailed = 'Article generation failed. Please try again.',
+  ArticleTimeout = 'Article generation timed out. Please try again.',
 }
 
 export enum StorageKey {
