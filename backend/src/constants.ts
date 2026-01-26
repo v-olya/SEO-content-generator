@@ -129,6 +129,8 @@ export const ARTICLE_VALIDATION_REMINDER_PROMPT =
   'You returned HTML without validating it. Please call the validate_microdata tool with your HTML to ensure the microdata is correct before providing the final response.';
 
 export const CLUSTERING_PROMPT_TEMPLATE = `You will receive an array of phrases. Cluster them into thematic groups and return STRICT JSON only, with the shape: {"clusters":[{"label":"...","items":["..."]}],"orphans":["..."]}. Do NOT include any markdown, commentary, or extra fields.
+Before clustering, perform a light normalization to detect near-duplicate keyword variants and filter them out, keeping the canonical variants only. 
+Pay attention to articles ( "a", "an", "the", zero), word order, morphology (plural → singular), etc.
 
 Important rules (apply these exactly):
 - Treat short country codes and common location names as LOCATION MODIFIERS.
