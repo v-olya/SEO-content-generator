@@ -95,8 +95,8 @@ export class ClusterPage implements OnInit {
 
   protected readonly sanitizedHtml = computed<SafeHtml | null>(() => {
     const html = this.articleHtml();
-    if (!html) return null;
-    return this.sanitizer.bypassSecurityTrustHtml(html);
+    return html; // this.sanitizer.bypassSecurityTrustHtml(html);
+    // Angular's DOM sanitizer has no problem with data:image/ URLs, so we can let it do its job.
   });
 
   protected readonly UILabel = UILabel;

@@ -125,3 +125,17 @@ h6 {
 p {
   color: var(--text-muted);
 }
+/* Added because Angular's DOM sanitizer strips certain attributes from img/figure tags */
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+figure {
+  margin: 1rem 0;
+  max-width: 100%;
+}
