@@ -52,9 +52,8 @@
             pButton
             [label]="UILabel.GenerateImage"
             (click)="generateImage()"
-            [disabled]="isGeneratingImage()"
+            [disabled]="isGeneratingImage() || !articleHtml()"
             [loading]="isGeneratingImage()"
-            [disabled]="!articleHtml()"
           ></button>
           <button
             pButton
