@@ -1,7 +1,7 @@
 export type {
   ClusterResponse,
   ClusterGroup,
-  OrphanGroup,
+  Orphan,
   ClusterDetailResponse,
   ArticleJobStatus,
   ArticleGenerationJob,

@@ -1,13 +1,13 @@
 export interface ClusterJob {
   jobId: string;
   clusters: ClusterGroup[];
-  orphans: OrphanGroup[];
+  orphans: Orphan[];
   createdAt: number;
 }
 export interface ClusterResponse {
   jobId: string;
   clusters: ClusterGroup[];
-  orphans: OrphanGroup[];
+  orphans: Orphan[];
 }
 
 export interface ClusterGroup {
@@ -17,7 +17,7 @@ export interface ClusterGroup {
   items: string[];
 }
 
-export interface OrphanGroup {
+export interface Orphan {
   id: string;
   slug: string;
   label: string;

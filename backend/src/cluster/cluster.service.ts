@@ -19,7 +19,7 @@ import {
   ClusterGroup,
   ClusterJob,
   ClusterResponse,
-  OrphanGroup,
+  Orphan,
 } from '../../../shared/cluster.types';
 
 @Injectable()
@@ -83,7 +83,7 @@ export class ClusterService {
       };
     }
 
-    const orphan = job.orphans.find((item: OrphanGroup) => item.slug === slug);
+    const orphan = job.orphans.find((item: Orphan) => item.slug === slug);
     if (orphan) {
       return {
         jobId,
