@@ -254,9 +254,9 @@ export class ClusterPage implements OnInit {
             // Prefer inserting after the first paragraph so the image appears inside the article
             if (/<\/p>/i.test(existing)) {
               updated = existing.replace(/<\/p>/i, `</p>${figure}`);
-            } else if (/<article[^>]*>/i.test(existing)) {
-              // Otherwise, insert right after the opening <article> tag
-              updated = existing.replace(/<article[^>]*>/i, (m) => m + figure);
+            } else if (/<[^>]*itemscope[^>]*>/i.test(existing)) {
+              // Otherwise, insert right after the opening tag with [itemscope]
+              updated = existing.replace(/<[^>]*itemscope[^>]*>/i, (m) => m + figure);
             } else {
               updated = existing + figure;
             }
