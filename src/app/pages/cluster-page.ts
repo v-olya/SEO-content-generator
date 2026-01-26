@@ -8,6 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { retry, switchMap, timer, takeWhile, tap } from 'rxjs';
@@ -19,7 +20,12 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TagModule } from 'primeng/tag';
 import { ClusterApiService } from '../services/cluster-api.service';
 import { StorageService } from '../services/storage.service';
-import { ArticleJobStatus, ArticleStatusResponse, ClusterDetailResponse } from '../types';
+import {
+  ArticleJobStatus,
+  ArticleStatusResponse,
+  ClusterDetailResponse,
+  ClusterResponse,
+} from '../types';
 import { ErrorMessage, UILabel, AriaLabel, StatusMessage, StorageKey } from '../constants';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
@@ -106,8 +112,21 @@ export class ClusterPage implements OnInit {
   ngOnInit() {
     const slug = this.route.snapshot.paramMap.get('slug');
     const jobId = this.getJobId(slug);
+    if (!slug) {
+      this.errorMessage.set(ErrorMessage.MissingClusterIdentifier);
+      this.loading.set(false);
+      return;
+    }
 
-    if (!jobId || !slug) {
+    // If we have a jobId try the server first; otherwise fall back to stored response.
+    if (!jobId) {
+      const fallback = this.getClusterFromStorage(slug);
+      if (fallback) {
+        this.response.set(fallback);
+        this.loading.set(false);
+        return;
+      }
+
       this.errorMessage.set(ErrorMessage.MissingClusterIdentifier);
       this.loading.set(false);
       return;
@@ -121,11 +140,47 @@ export class ClusterPage implements OnInit {
           this.response.set(result);
           this.loading.set(false);
         },
-        error: () => {
+        error: (error: unknown) => {
+          // If the backend no longer knows about the job (server restart), fall back to stored data
+          if (error instanceof HttpErrorResponse && error.status === 404) {
+            const fallback = this.getClusterFromStorage(slug);
+            if (fallback) {
+              this.response.set(fallback);
+              this.loading.set(false);
+              return;
+            }
+          }
+
           this.errorMessage.set(ErrorMessage.ClusterLoadFailed);
           this.loading.set(false);
         },
       });
+  }
+
+  private getClusterFromStorage(slug: string): ClusterDetailResponse | null {
+    const stored = this.storage.getItem<ClusterResponse>(StorageKey.ClusterResponse);
+    if (!stored) return null;
+
+    const { clusters, orphans, jobId } = stored;
+
+    const groups: ClusterDetailResponse[] = [
+      ...clusters.map((c) => ({
+        jobId,
+        slug: c.slug,
+        label: c.label,
+        items: c.items,
+        type: 'cluster' as const,
+      })),
+      ...orphans.map((o) => ({
+        jobId,
+        slug: o.slug,
+        label: o.label,
+        items: [o.item],
+        type: 'orphan' as const,
+      })),
+    ];
+
+    return groups.find((g) => g.slug === slug) ?? null;
   }
 
   protected generateArticle(): void {
