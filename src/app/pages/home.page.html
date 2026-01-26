@@ -39,12 +39,14 @@
 <div aria-live="polite" aria-atomic="true">
   @if (loading()) {
     <p-message severity="info" role="status">
-      <p-progressSpinner
-        strokeWidth="4"
-        [style]="{ width: '1.5rem', height: '1.5rem', marginRight: '0.5rem' }"
-        [attr.aria-label]="AriaLabel.Loading"
-      ></p-progressSpinner>
-      <span>{{ StatusMessage.ProcessingSearchSuggestions }}</span>
+      <div class="progress-status aligned">
+        <p-progressSpinner
+          strokeWidth="4"
+          [style]="{ width: '20px', height: '20px', marginRight: '1rem' }"
+          [attr.aria-label]="AriaLabel.Loading"
+        ></p-progressSpinner>
+        <span>{{ StatusMessage.ProcessingSearchSuggestions }}</span>
+      </div>
     </p-message>
   }
 

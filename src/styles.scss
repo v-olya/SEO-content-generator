@@ -125,6 +125,16 @@ h6 {
 p {
   color: var(--text-muted);
 }
+
+.aligned {
+  display: flex;
+  align-items: center;
+}
+
+.progress-status {
+  margin: 0.5rem;
+}
+
 /* Added because Angular's DOM sanitizer strips certain attributes from img/figure tags */
 
 img {
