@@ -33,7 +33,7 @@ IMPORTANT RULES:
 2. After generating the article, you MUST call the "validate_microdata" tool to verify the markup is valid.
 3. If validation fails, fix the issues and validate again.
 4. Only return the final HTML after it passes validation.
-5. Never return invalid or unvalidated HTML.
+5. Return only plain valid HTML and ensure it contains no unsafe elements.
 
 ADDITIONAL ANSWER QUALITY RULES:
 - Provide useful, actionable guidance: include clear step-by-step instructions, checklists, examples, common pitfalls, and approximate timelines or required documents when applicable.
@@ -130,13 +130,14 @@ export const ARTICLE_VALIDATION_REMINDER_PROMPT =
 
 export const CLUSTERING_PROMPT_TEMPLATE = `You will receive an array of phrases. Cluster them into thematic groups and return STRICT JSON only, with the shape: {"clusters":[{"label":"...","items":["..."]}],"orphans":["..."]}. Do NOT include any markdown, commentary, or extra fields.
 Before clustering, perform a light normalization to detect near-duplicate keyword variants and filter them out, keeping the canonical variants only. 
-Pay attention to articles ( "a", "an", "the", zero), word order, morphology (plural → singular), etc.
+Pay attention to articles ( "a", "an", "the", zero), word order, morphology (plural → singular), casing, etc.
 
 Important rules (apply these exactly):
+- Prefer semantic, intent-first clustering over strict token overlap. Treat paraphrases, synonyms, and common rephrasings as matching when the underlying intent is the same.
+- Normalize punctuation and whitespace when comparing suggestions, but preserve meaningful words.
 - Treat short country codes and common location names as LOCATION MODIFIERS.
 - Do NOT place a location-specific items into a general cluster (e.g., "Selling a house - General") unless other items in the cluster share the same location modifier or the location does not change the intent or required guidance. For example, "how to sell a house uk" should be considered location-specific and should not be merged into a pure general "how to sell a house" cluster unless you are sure the guidance is identical.
-- Normalize punctuation and whitespace when comparing suggestions, but preserve meaningful words. Ignore casing.
 - Only include an item in a cluster if it clearly matches the cluster theme. Otherwise, put it into "orphans".
-- If a suggestion contains multiple clear intents, you may include it in multiple clusters.
+- If a suggestion contains multiple clear intents, you may include it in multiple clusters. But DO NOT add the key to orphans if you've already included it (or the similar one) into another cluster.
 - Identify specific brands, products, or named entities (e.g., "Coffee 2.0", "iPhone 15") and treat them as distinct from general categories. Do not cluster specific product names or brand names with general thematic clusters unless the cluster is specifically about that brand/product.
 Here are the phrases: {queries}`;
