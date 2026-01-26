@@ -70,7 +70,7 @@ Cover the following key points:
 
 ORGANIZATION GUIDELINES:
 - Do NOT convert every bullet in {topic_bullets} into a separate <h2>. Instead, group similar suggestions into logical sections and discuss the variations inside that section as needed.
-- Use clear, "catchy" headings. Avoid prefixing headings with category labels.
+- Write clear, catchy, engaging headings, especially the main one. Avoid prefixing headings with category labels.
 - Use <h2> for major sections and <h3> for sub-sections when you need to separate variations or specific contexts.
  - Limit the number of top-level sections (h2) to at most 6. Prioritize the most important, actionable sections and combine less-important items into subsections (h3).
  - Avoid headings that do not specify the object of the action. Do NOT create vague or overly general headings (examples: "Common Pitfalls to Avoid", "Growing in Bottles"). Every heading must clearly state the subject it applies to. If a heading would be generic, make it specific by including the topic (for example, "Common pitfalls when selling a house" or "Growing tomatoes in bottles").
