@@ -214,7 +214,9 @@ export class ClusterPage implements OnInit {
           this.articleError.set(null);
           this.copied.set(true);
           // auto-hide after 2 seconds
-          setTimeout(() => this.copied.set(false), 2000);
+          timer(2000)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => this.copied.set(false));
         })
         .catch(() => {
           this.articleError.set('Failed to copy HTML to clipboard');
