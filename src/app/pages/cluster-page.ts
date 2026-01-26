@@ -101,7 +101,7 @@ export class ClusterPage implements OnInit {
 
   protected readonly sanitizedHtml = computed<SafeHtml | null>(() => {
     const html = this.articleHtml();
-    return html; // this.sanitizer.bypassSecurityTrustHtml(html);
+    return html; //this.sanitizer.bypassSecurityTrustHtml(html ?? '');
     // Angular's DOM sanitizer has no problem with data:image/ URLs, so we can let it do its job.
   });
 
@@ -245,11 +245,26 @@ export class ClusterPage implements OnInit {
 
           // Insert image with proper schema.org ImageObject microdata into the article HTML
           const alt = `Illustration for ${cluster.label}`;
-          const figure = `<figure itemscope itemtype="https://schema.org/ImageObject"><img src="${result.dataUrl}" alt="${alt}" itemprop="contentUrl" style="width: 100%; height: auto; display: block; border-radius: 8px;" /><figcaption itemprop="caption" class="visually-hidden">${alt}</figcaption><meta itemprop="width" content="1792" /><meta itemprop="height" content="1024" /></figure>`;
+          const figure = `<figure itemprop="image" itemscope itemtype="https://schema.org/ImageObject"><img itemprop="url" src="${result.dataUrl}" alt="${alt}" style="width: 100%; height: auto; display: block; border-radius: 8px;" /><figcaption itemprop="caption" class="visually-hidden">${alt}</figcaption><meta itemprop="width" content="1792" /><meta itemprop="height" content="1024" /></figure>`;
 
           const existing = this.articleHtml() || '';
-          // Prepend figure to existing article HTML so it appears as hero image
-          this.articleHtml.set(figure + existing);
+          let updated = '';
+
+          if (existing) {
+            // Prefer inserting after the first paragraph so the image appears inside the article
+            if (/<\/p>/i.test(existing)) {
+              updated = existing.replace(/<\/p>/i, `</p>${figure}`);
+            } else if (/<article[^>]*>/i.test(existing)) {
+              // Otherwise, insert right after the opening <article> tag
+              updated = existing.replace(/<article[^>]*>/i, (m) => m + figure);
+            } else {
+              updated = existing + figure;
+            }
+          } else {
+            updated = figure;
+          }
+
+          this.articleHtml.set(updated);
           this.imageGenerating.set(false);
         },
         error: () => {
