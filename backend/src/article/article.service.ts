@@ -202,7 +202,7 @@ export class ArticleService {
             if (validationResult.valid) {
               this.logger.log(`Article generation completed successfully`);
               job.status = 'completed';
-              job.html = args.html;
+              job.html = this.stripImgTags(args.html); // Angular's DOM sanitizer won't strip IMGs (if any) when we add innerHTML
               job.completedAt = Date.now();
               return;
             }
@@ -360,5 +360,9 @@ export class ArticleService {
       errors,
       warnings,
     };
+  }
+
+  private stripImgTags(html: string): string {
+    return html.replace(/<img[^>]*>/gi, '');
   }
 }
